@@ -14,7 +14,7 @@ const Footer = () => {
               <div className="bg-gradient-to-br from-primary to-primary/80 rounded-xl p-2.5">
                 <GraduationCap className="w-6 h-6 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold">ClubHub</span>
+              <span className="text-xl font-bold">CampusHub</span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Empowering students through clubs, events, and community engagement.
@@ -131,7 +131,7 @@ const Footer = () => {
         <div className="border-t border-border/40 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground text-center md:text-left">
-              &copy; {currentYear} ClubHub. All rights reserved.
+              &copy; {currentYear} CampusHub. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
               <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">

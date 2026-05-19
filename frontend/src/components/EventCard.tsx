@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
 import { Event } from "@/data/eventsData";
+import { useAuth } from "@/context/AuthContext";
 
 interface EventCardProps {
   event: Event;
@@ -12,6 +13,7 @@ interface EventCardProps {
 
 const EventCard = ({ event }: EventCardProps) => {
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const registrationProgress = (event.currentParticipants / event.maxParticipants) * 100;
   const spotsLeft = event.maxParticipants - event.currentParticipants;
   const isEventFull = spotsLeft === 0;
@@ -97,7 +99,15 @@ const EventCard = ({ event }: EventCardProps) => {
       </CardContent>
       
       <CardFooter>
-        {event.status === "completed" ? (
+        {isAdmin ? (
+          <Button 
+            onClick={() => navigate("/dashboard")}
+            className="w-full font-semibold bg-indigo-600 hover:bg-indigo-700"
+          >
+            Manage Event (Admin)
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
+        ) : event.status === "completed" ? (
           <Button variant="secondary" disabled className="w-full font-semibold">
             Event Completed
           </Button>

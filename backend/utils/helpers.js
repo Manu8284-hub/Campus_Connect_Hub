@@ -11,12 +11,15 @@ export const loadLocalDb = async () => {
     const raw = await readFile(LOCAL_DB_PATH, "utf8");
     const parsed = JSON.parse(raw);
     return {
-      clubs: Array.isArray(parsed.clubs) ? parsed.clubs : [],
-      users: Array.isArray(parsed.users) ? parsed.users : [],
-      loginHistory: Array.isArray(parsed.loginHistory) ? parsed.loginHistory : [],
+      clubs: [],
+      users: [],
+      loginHistory: [],
+      events: [],
+      memberships: [],
+      ...parsed
     };
   } catch (err) {
-    return { clubs: [], users: [], loginHistory: [] };
+    return { clubs: [], users: [], loginHistory: [], events: [], memberships: [] };
   }
 };
 

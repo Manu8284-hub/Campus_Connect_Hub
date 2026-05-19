@@ -12,7 +12,7 @@ import { useAppContext } from "@/context/AppContext";
 import { useToast } from "@/hooks/use-toast";
 import { Club } from "@/data/clubsData";
 import { Event } from "@/data/eventsData";
-import { Users, Calendar, TrendingUp, Plus, Settings, History, User, X, ShieldCheck, LayoutDashboard } from "lucide-react";
+import { Users, Calendar, TrendingUp, Plus, Settings, History, User, X, ShieldCheck, LayoutDashboard, Bell } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { apiUrl } from "@/lib/api";
 import PageHeader from "@/components/PageHeader";
@@ -47,6 +47,55 @@ const AdminDashboard = () => {
     }
   };
 
+
+  const [announcementForm, setAnnouncementForm] = useState({
+    title: "",
+    message: "",
+  });
+  const [isSendingAnnouncement, setIsSendingAnnouncement] = useState(false);
+
+  const handleSendAnnouncement = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!announcementForm.title.trim() || !announcementForm.message.trim()) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in both the title and message of the announcement.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSendingAnnouncement(true);
+    try {
+      const response = await fetch(apiUrl("/api/events/announce"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: announcementForm.title.trim(),
+          message: announcementForm.message.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send announcement");
+      }
+
+      toast({
+        title: "Announcement Sent!",
+        description: "Your notification has been broadcast to all users.",
+      });
+
+      setAnnouncementForm({ title: "", message: "" });
+    } catch (error) {
+      toast({
+        title: "Broadcast failed",
+        description: error instanceof Error ? error.message : "Unable to send announcement.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSendingAnnouncement(false);
+    }
+  };
 
   const [clubForm, setClubForm] = useState({
     name: "",
@@ -368,10 +417,11 @@ const AdminDashboard = () => {
 
       <div className="container mx-auto px-4 py-8 flex-1">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="clubs">Manage Clubs</TabsTrigger>
             <TabsTrigger value="events">Manage Events</TabsTrigger>
+            <TabsTrigger value="announcements">Send Announcement</TabsTrigger>
             <TabsTrigger value="logins">Login History</TabsTrigger>
           </TabsList>
 
@@ -786,7 +836,55 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
-          {/* Events Management Tab Content (already exists) */}
+          
+          {/* Announcement Tab */}
+          <TabsContent value="announcements" className="space-y-6">
+            <Card className="border-purple-500/20 bg-slate-900/40 backdrop-blur-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-purple-400">
+                  <Bell className="w-5 h-5 text-purple-400 animate-pulse" />
+                  Broadcast Live Announcement
+                </CardTitle>
+                <CardDescription>
+                  Send a push notification in real-time to all connected users on the platform.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSendAnnouncement} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="announceTitle">Announcement Title *</Label>
+                    <Input
+                      id="announceTitle"
+                      required
+                      value={announcementForm.title}
+                      onChange={(e) => setAnnouncementForm({ ...announcementForm, title: e.target.value })}
+                      placeholder="e.g. Server Maintenance or New Coding Contest!"
+                      className="border-purple-500/20 focus-visible:ring-purple-500"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="announceMessage">Message Content *</Label>
+                    <Textarea
+                      id="announceMessage"
+                      required
+                      value={announcementForm.message}
+                      onChange={(e) => setAnnouncementForm({ ...announcementForm, message: e.target.value })}
+                      placeholder="Type the message you want to broadcast..."
+                      rows={5}
+                      className="border-purple-500/20 focus-visible:ring-purple-500"
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-lg shadow-purple-600/25 h-11"
+                    disabled={isSendingAnnouncement}
+                  >
+                    {isSendingAnnouncement ? "Broadcasting..." : "Send Real-Time Notification"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
           
           {/* Login History Tab */}
           <TabsContent value="logins" className="space-y-6">

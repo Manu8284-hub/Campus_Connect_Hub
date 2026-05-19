@@ -193,7 +193,7 @@ const Profile = () => {
 </head>
 <body>
   <div class="card">
-    <div class="eyebrow">ClubHub Certificate</div>
+    <div class="eyebrow">CampusHub Certificate</div>
     <h1>Certificate of Participation</h1>
     <p>This certifies that</p>
     <div class="name">${formatName(user.name)}</div>
@@ -261,7 +261,7 @@ const Profile = () => {
                     </Button>
                   </Link>
                   {isAdmin && (
-                    <Link to="/admin">
+                    <Link to="/dashboard">
                       <Button className="w-full rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 sm:w-auto">
                         Admin Dashboard
                         <ArrowRight className="ml-2 h-4 w-4" />
@@ -463,11 +463,10 @@ const Profile = () => {
                           key={interest}
                           type="button"
                           onClick={() => toggleInterest(interest)}
-                          className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
-                            active
+                          className={`rounded-full border px-4 py-2 text-sm font-medium transition ${active
                               ? "border-sky-400 bg-sky-500/15 text-sky-300"
                               : "border-border bg-card/60 text-muted-foreground hover:border-sky-400/50"
-                          }`}
+                            }`}
                         >
                           {interest}
                         </button>

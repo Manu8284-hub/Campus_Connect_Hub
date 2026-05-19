@@ -9,6 +9,7 @@ import {
   Sparkles,
   Shield,
   Chrome,
+  Loader2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -52,7 +53,7 @@ declare global {
 }
 
 const Login = () => {
-  const { loginWithGoogle, loginWithCredentials, isAuthenticated, user } = useAuth();
+  const { loginWithGoogle, loginWithCredentials, isAuthenticated, user, isLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,15 +62,28 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [isGoogleReady, setIsGoogleReady] = useState(false);
 
   const from =
     (location.state as { from?: { pathname?: string } } | undefined)?.from
-      ?.pathname || "/";
+      ?.pathname || "/dashboard";
 
-  const googleClientId = import.meta.env
-    .VITE_GOOGLE_CLIENT_ID as string | undefined;
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      navigate(from === "/login" ? "/dashboard" : from, { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate, from]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <Loader2 className="w-10 h-10 text-sky-500 animate-spin" />
+      </div>
+    );
+  }
+
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
 
   const handleGoogleLogin = () => {
     if (!googleClientId) {
@@ -109,7 +123,7 @@ const Login = () => {
     event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
-    setIsLoading(true);
+    setIsSubmitLoading(true);
 
     try {
       const isValid = await loginWithCredentials(email, password);
@@ -139,7 +153,7 @@ const Login = () => {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsSubmitLoading(false);
     }
   };
 
@@ -338,10 +352,10 @@ const Login = () => {
 
                     <Button
                       type="submit"
-                      disabled={isLoading}
+                      disabled={isSubmitLoading}
                       className="w-full h-12 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-lg shadow-sky-500/25"
                     >
-                      {isLoading ? "Signing In..." : "Sign In"}
+                      {isSubmitLoading ? "Signing In..." : "Sign In"}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </form>

@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const isAdmin = Boolean(user?.email?.toLowerCase().endsWith("@chitkara.edu.in"));
+  const isAdmin = Boolean(user?.email?.toLowerCase() === "admin@gmail.com");
 
   const checkSession = async () => {
     try {

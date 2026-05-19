@@ -3,6 +3,7 @@ import { clubs as initialClubs, Club } from "@/data/clubsData";
 import { events as initialEvents, Event } from "@/data/eventsData";
 import { apiUrl, parseApiError } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useSocket } from "@/context/SocketContext";
 
 interface SocialLinks {
   github: string;
@@ -167,6 +168,62 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     void fetchClubs();
     void fetchEvents();
   }, []);
+
+  const { socket } = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleEventCreated = (data: { event: Event }) => {
+      setEvents((prev) => {
+        if (prev.some((e) => e.id === data.event.id)) return prev;
+        return [data.event, ...prev];
+      });
+    };
+
+    const handleEventUpdated = (data: { event: Event }) => {
+      setEvents((prev) =>
+        prev.map((e) => (e.id === data.event.id ? data.event : e))
+      );
+    };
+
+    const handleEventDeleted = (data: { id: number }) => {
+      setEvents((prev) => prev.filter((e) => e.id !== data.id));
+    };
+
+    const handleClubCreated = (data: { club: Club }) => {
+      setClubs((prev) => {
+        if (prev.some((c) => c.id === data.club.id)) return prev;
+        return [...prev, data.club];
+      });
+    };
+
+    const handleClubUpdated = (data: { club: Club }) => {
+      setClubs((prev) =>
+        prev.map((c) => (c.id === data.club.id ? data.club : c))
+      );
+    };
+
+    const handleClubDeleted = (data: { id: number }) => {
+      setClubs((prev) => prev.filter((c) => c.id !== data.id));
+    };
+
+    socket.on("eventCreated", handleEventCreated);
+    socket.on("eventUpdated", handleEventUpdated);
+    socket.on("eventDeleted", handleEventDeleted);
+    socket.on("clubCreated", handleClubCreated);
+    socket.on("clubUpdated", handleClubUpdated);
+    socket.on("clubDeleted", handleClubDeleted);
+
+    return () => {
+      socket.off("eventCreated", handleEventCreated);
+      socket.off("eventUpdated", handleEventUpdated);
+      socket.off("eventDeleted", handleEventDeleted);
+      socket.off("clubCreated", handleClubCreated);
+      socket.off("clubUpdated", handleClubUpdated);
+      socket.off("clubDeleted", handleClubDeleted);
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (!currentEmail) {

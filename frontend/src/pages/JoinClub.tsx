@@ -16,7 +16,7 @@ const JoinClub = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { clubs, submitClubApplication } = useAppContext();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isAdmin } = useAuth();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -35,8 +35,15 @@ const JoinClub = () => {
         variant: "destructive",
       });
       navigate("/login", { state: { from: { pathname: `/clubs/${id}/join` } } });
+    } else if (isAdmin) {
+      toast({
+        title: "Admin Action Restricted",
+        description: "Administrators cannot join clubs.",
+        variant: "destructive",
+      });
+      navigate("/dashboard");
     }
-  }, [id, isAuthenticated, navigate, toast]);
+  }, [id, isAuthenticated, isAdmin, navigate, toast]);
 
   useEffect(() => {
     setFormData((prev) => ({

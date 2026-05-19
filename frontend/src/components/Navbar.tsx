@@ -109,7 +109,7 @@
 //             <div className="bg-gradient-to-br from-primary to-primary/80 rounded-xl p-2.5 transition-transform group-hover:scale-110 shadow-lg">
 //               <GraduationCap className="w-6 h-6 text-primary-foreground" />
 //             </div>
-//             <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">ClubHub</span>
+//             <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">CampusHub</span>
 //           </Link>
 
 //           <div className="flex items-center gap-2 lg:gap-4">
@@ -460,29 +460,19 @@ const Navbar = () => {
     },
   ];
 
-  const adminItems = isAdmin
-    ? [
-        { path: "/admin", label: "Admin" },
-        ...(isAuthenticated
-          ? []
-          : [{ path: "/create-account", label: "Create Account" }]),
-      ]
-    : [];
-
-  const navItems = [...baseNavItems, ...adminItems];
+  const navItems = baseNavItems;
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 md:h-20 items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+      <div className="container mx-auto mt-4 px-2 sm:px-4 pointer-events-auto">
+        <nav className="glass-strong rounded-full px-4 sm:px-6 py-3 flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="rounded-2xl bg-gradient-to-br from-primary to-primary/80 p-2.5 shadow-lg transition-transform group-hover:scale-110">
-              <GraduationCap className="h-6 w-6 text-white" />
-            </div>
-
-            <span className="bg-gradient-to-r from-primary to-sky-400 bg-clip-text text-xl md:text-2xl font-bold text-transparent">
-              ClubHub
+          <Link to="/" className="flex items-center gap-2 group" onClick={() => setIsOpen(false)}>
+            <span className="relative grid place-items-center w-10 h-10 rounded-xl gradient-bg shadow-glow-soft transition-transform group-hover:scale-105">
+              <GraduationCap className="h-5 w-5 text-primary-foreground" />
+            </span>
+            <span className="font-display font-bold text-lg md:text-xl tracking-tight">
+              Campus<span className="gradient-text">Hub</span>
             </span>
           </Link>
 
@@ -652,15 +642,6 @@ const Navbar = () => {
                       <CalendarClock className="mr-2 h-4 w-4" />
                       Upcoming Events
                     </DropdownMenuItem>
-                    {isAdmin && (
-                      <DropdownMenuItem
-                        onClick={() => navigate("/admin")}
-                        className="rounded-xl cursor-pointer"
-                      >
-                        <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
-                        Admin Dashboard
-                      </DropdownMenuItem>
-                    )}
 
                     <DropdownMenuSeparator />
 
@@ -675,11 +656,14 @@ const Navbar = () => {
                 </DropdownMenu>
               </>
             ) : (
-              <Link to="/login" className="hidden md:block">
-                <Button>
+              <div className="hidden md:flex items-center gap-2">
+                <Link to="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground px-4 py-2">
                   Login
-                </Button>
-              </Link>
+                </Link>
+                <Link to="/signup" className="neon-button text-sm py-2 px-5">
+                  Get Started
+                </Link>
+              </div>
             )}
 
 
@@ -696,7 +680,7 @@ const Navbar = () => {
               )}
             </button>
           </div>
-        </div>
+        </nav>
 
         {/* Mobile Navigation */}
         {isOpen && (
@@ -778,19 +762,7 @@ const Navbar = () => {
                   Dashboard
                 </Button>
 
-                {isAdmin && (
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start"
-                    onClick={() => {
-                      navigate("/admin");
-                      setIsOpen(false);
-                    }}
-                  >
-                    <ShieldCheck className="mr-2 h-4 w-4" />
-                    Admin Dashboard
-                  </Button>
-                )}
+
 
                 <div className="rounded-2xl border border-border/70 bg-background/70 p-3">
                   <div className="mb-2 flex items-center gap-2">
@@ -827,11 +799,18 @@ const Navbar = () => {
                 </Button>
               </div>
             ) : (
-              <Link to="/login" onClick={() => setIsOpen(false)}>
-                <Button className="w-full">
-                  Login
-                </Button>
-              </Link>
+              <div className="flex flex-col gap-2">
+                <Link to="/login" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/signup" onClick={() => setIsOpen(false)}>
+                  <Button className="w-full neon-button">
+                    Get Started
+                  </Button>
+                </Link>
+              </div>
             )}
 
             <Button
@@ -852,7 +831,7 @@ const Navbar = () => {
       >
         <AlertDialogContent className="max-w-md rounded-2xl border-border/60">
           <AlertDialogHeader>
-            <AlertDialogTitle>Logout from ClubHub?</AlertDialogTitle>
+            <AlertDialogTitle>Logout from CampusHub?</AlertDialogTitle>
             <AlertDialogDescription>
               You will be signed out from this session and returned to the login page.
             </AlertDialogDescription>
@@ -870,7 +849,7 @@ const Navbar = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </nav>
+    </header>
   );
 };
 

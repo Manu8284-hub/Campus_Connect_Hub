@@ -100,6 +100,13 @@ import Logout from "./pages/Logout";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 
+import { useAuth } from "./context/AuthContext";
+
+const DashboardRouter = () => {
+  const { isAdmin } = useAuth();
+  return isAdmin ? <AdminDashboard /> : <Profile />;
+};
+
 // Global Query Client for data fetching
 const queryClient = new QueryClient();
 
@@ -134,7 +141,7 @@ const App = () => (
                     path="/profile"
                     element={
                       <ProtectedRoute>
-                        <Profile />
+                        <DashboardRouter />
                       </ProtectedRoute>
                     }
                   />
@@ -142,16 +149,14 @@ const App = () => (
                     path="/dashboard"
                     element={
                       <ProtectedRoute>
-                        <Profile />
+                        <DashboardRouter />
                       </ProtectedRoute>
                     }
                   />
                   <Route
                     path="/admin"
                     element={
-                      <ProtectedRoute>
-                        <AdminDashboard />
-                      </ProtectedRoute>
+                      <Navigate to="/dashboard" replace />
                     }
                   />
 

@@ -40,6 +40,15 @@ export const createClub = async (req, res) => {
 
       db.clubs.push(createdClub);
       await saveLocalDb(db);
+
+      const io = req.app.get("io");
+      if (io) {
+        io.emit("clubCreated", {
+          message: `New Club Created: ${createdClub.name}`,
+          club: createdClub
+        });
+      }
+
       return res.status(201).json({ message: "Club created", club: createdClub });
     }
 
@@ -56,7 +65,17 @@ export const createClub = async (req, res) => {
     });
 
     await createdClub.save();
-    res.status(201).json({ message: "Club created", club: removeMongooseMetadata(createdClub) });
+    const clubData = removeMongooseMetadata(createdClub);
+
+    const io = req.app.get("io");
+    if (io) {
+      io.emit("clubCreated", {
+        message: `New Club Created: ${clubData.name}`,
+        club: clubData
+      });
+    }
+
+    res.status(201).json({ message: "Club created", club: clubData });
   } catch (error) {
     res.status(500).json({ message: "Failed to create club", error: error.message });
   }
@@ -86,6 +105,15 @@ export const updateClub = async (req, res) => {
 
       db.clubs[clubIndex] = updatedClub;
       await saveLocalDb(db);
+
+      const io = req.app.get("io");
+      if (io) {
+        io.emit("clubUpdated", {
+          message: `Club Updated: ${updatedClub.name}`,
+          club: updatedClub
+        });
+      }
+
       return res.json({ message: "Club updated", club: updatedClub });
     }
 
@@ -105,7 +133,17 @@ export const updateClub = async (req, res) => {
     }
 
     await existingClub.save();
-    res.json({ message: "Club updated", club: removeMongooseMetadata(existingClub) });
+    const clubData = removeMongooseMetadata(existingClub);
+
+    const io = req.app.get("io");
+    if (io) {
+      io.emit("clubUpdated", {
+        message: `Club Updated: ${clubData.name}`,
+        club: clubData
+      });
+    }
+
+    res.json({ message: "Club updated", club: clubData });
   } catch (error) {
     res.status(500).json({ message: "Failed to update club", error: error.message });
   }
@@ -124,6 +162,15 @@ export const deleteClub = async (req, res) => {
 
       const [removedClub] = db.clubs.splice(clubIndex, 1);
       await saveLocalDb(db);
+
+      const io = req.app.get("io");
+      if (io) {
+        io.emit("clubDeleted", {
+          message: `Club Deleted: ${removedClub.name}`,
+          id: clubId
+        });
+      }
+
       return res.json({ message: "Club deleted", club: removedClub });
     }
 
@@ -131,6 +178,14 @@ export const deleteClub = async (req, res) => {
 
     if (!removedClub) {
       return res.status(404).json({ message: "Club not found" });
+    }
+
+    const io = req.app.get("io");
+    if (io) {
+      io.emit("clubDeleted", {
+        message: `Club Deleted: ${removedClub.name}`,
+        id: clubId
+      });
     }
 
     res.json({ message: "Club deleted", club: removeMongooseMetadata(removedClub) });
@@ -179,7 +234,29 @@ export const submitClubApplication = async (req, res) => {
     }
 
     if (!isMongoReady()) {
-      return res.status(503).json({ message: "MongoDB is required for applications" });
+      const db = await loadLocalDb();
+      if (!db.memberships) db.memberships = [];
+      
+      const newMembership = {
+        id: getNextLocalId(db.memberships),
+        clubId,
+        clubName,
+        userName: name,
+        userEmail: email,
+        rollNumber,
+        reason,
+        status: "approved"
+      };
+      
+      db.memberships.push(newMembership);
+      
+      const clubIndex = db.clubs.findIndex(c => c.id === clubId);
+      if (clubIndex !== -1) {
+        db.clubs[clubIndex].members = (db.clubs[clubIndex].members || 0) + 1;
+      }
+      
+      await saveLocalDb(db);
+      return res.status(201).json({ message: "Application submitted and joined successfully", membership: newMembership });
     }
 
     const membershipId = await getNextId(ClubMembership);

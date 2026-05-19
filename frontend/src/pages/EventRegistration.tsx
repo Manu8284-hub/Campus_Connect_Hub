@@ -15,7 +15,7 @@ const EventRegistration = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { events, registerForEvent } = useAppContext();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isAdmin } = useAuth();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -34,8 +34,15 @@ const EventRegistration = () => {
         variant: "destructive",
       });
       navigate("/login", { state: { from: { pathname: `/events/${id}/register` } } });
+    } else if (isAdmin) {
+      toast({
+        title: "Admin Action Restricted",
+        description: "Administrators cannot register for events.",
+        variant: "destructive",
+      });
+      navigate("/dashboard");
     }
-  }, [id, isAuthenticated, navigate, toast]);
+  }, [id, isAuthenticated, isAdmin, navigate, toast]);
 
   useEffect(() => {
     setFormData((prev) => ({

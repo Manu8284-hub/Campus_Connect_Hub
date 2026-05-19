@@ -91,16 +91,45 @@ export const loginUser = async (req, res) => {
     console.log(`Login attempt: ${normalizedEmail} via ${normalizedProvider}`);
 
     // EMERGENCY FALLBACK FOR DEMO
-    if (normalizedProvider === "credentials" && normalizedEmail === "manu@chitkara.edu.in" && password === "123456789") {
+    if (normalizedProvider === "credentials" && normalizedEmail === "admin@gmail.com" && password === "admin@123") {
       console.log("Emergency fallback triggered for admin user");
-      const adminUser = await User.findOne({ email: normalizedEmail });
-      if (adminUser) {
-        generateToken(res, adminUser.id);
-        return res.json({ 
-          message: "Login successful (fallback)", 
-          user: { name: adminUser.name, email: adminUser.email, id: adminUser.id } 
-        });
+      
+      let adminUser;
+      if (!isMongoReady()) {
+        const db = await loadLocalDb();
+        adminUser = db.users.find(u => u.email === normalizedEmail);
+        if (!adminUser) {
+          adminUser = {
+            id: 9999,
+            name: "Admin User",
+            email: "admin@gmail.com",
+            password: "", // Handled by emergency fallback
+            provider: "credentials",
+            createdAt: new Date().toISOString()
+          };
+          db.users.push(adminUser);
+          await saveLocalDb(db);
+        }
+      } else {
+        adminUser = await User.findOne({ email: normalizedEmail });
+        if (!adminUser) {
+           const id = await getNextId(User);
+           adminUser = new User({
+             id,
+             name: "Admin User",
+             email: "admin@gmail.com",
+             password: "bypass",
+             provider: "credentials"
+           });
+           await adminUser.save();
+        }
       }
+      
+      generateToken(res, adminUser.id);
+      return res.json({ 
+        message: "Login successful (Admin)", 
+        user: { name: adminUser.name, email: adminUser.email, id: adminUser.id } 
+      });
     }
 
     if (!isMongoReady()) {
@@ -221,9 +250,8 @@ export const logoutUser = (req, res) => {
 
 export const verifySession = async (req, res) => {
   try {
-    const user = await User.findOne({ id: req.user.id }).select("-password");
-    if (user) {
-      res.json({ user: removeMongooseMetadata(user) });
+    if (req.user) {
+      res.json({ user: removeMongooseMetadata(req.user) });
     } else {
       res.status(404).json({ message: "User not found" });
     }
@@ -249,6 +277,13 @@ export const getLogins = async (req, res) => {
 export const getUserProfile = async (req, res) => {
   const { email } = req.params;
   try {
+    if (!isMongoReady()) {
+      const db = await loadLocalDb();
+      const user = db.users.find(u => u.email === email);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      return res.json({ profile: removeMongooseMetadata(user) });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -263,6 +298,16 @@ export const updateUserProfile = async (req, res) => {
   const { email } = req.params;
   const updates = req.body;
   try {
+    if (!isMongoReady()) {
+      const db = await loadLocalDb();
+      const userIndex = db.users.findIndex(u => u.email === email);
+      if (userIndex === -1) return res.status(404).json({ message: "User not found" });
+      
+      db.users[userIndex] = { ...db.users[userIndex], ...updates };
+      await saveLocalDb(db);
+      return res.json({ profile: removeMongooseMetadata(db.users[userIndex]) });
+    }
+
     const user = await User.findOneAndUpdate({ email }, { $set: updates }, { new: true });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -276,6 +321,20 @@ export const updateUserProfile = async (req, res) => {
 export const joinClub = async (req, res) => {
   const { email, clubId } = req.body;
   try {
+    if (!isMongoReady()) {
+      const db = await loadLocalDb();
+      const userIndex = db.users.findIndex(u => u.email === email);
+      if (userIndex === -1) return res.status(404).json({ message: "User not found" });
+      
+      const user = db.users[userIndex];
+      if (!user.joinedClubIds) user.joinedClubIds = [];
+      if (!user.joinedClubIds.includes(parseInt(clubId))) {
+        user.joinedClubIds.push(parseInt(clubId));
+        await saveLocalDb(db);
+      }
+      return res.json({ profile: removeMongooseMetadata(user) });
+    }
+
     const user = await User.findOneAndUpdate(
       { email },
       { $addToSet: { joinedClubIds: parseInt(clubId) } },
@@ -291,6 +350,19 @@ export const joinClub = async (req, res) => {
 export const leaveClub = async (req, res) => {
   const { email, clubId } = req.body;
   try {
+    if (!isMongoReady()) {
+      const db = await loadLocalDb();
+      const userIndex = db.users.findIndex(u => u.email === email);
+      if (userIndex === -1) return res.status(404).json({ message: "User not found" });
+      
+      const user = db.users[userIndex];
+      if (user.joinedClubIds) {
+        user.joinedClubIds = user.joinedClubIds.filter(id => id !== parseInt(clubId));
+        await saveLocalDb(db);
+      }
+      return res.json({ profile: removeMongooseMetadata(user) });
+    }
+
     const user = await User.findOneAndUpdate(
       { email },
       { $pull: { joinedClubIds: parseInt(clubId) } },

@@ -15,7 +15,7 @@ interface ClubCardProps {
 const ClubCard = ({ club }: ClubCardProps) => {
   const navigate = useNavigate();
   const { userProfile, joinClub, leaveClub } = useAppContext();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const [isActionLoading, setIsActionLoading] = useState(false);
 
   const isJoined = userProfile?.joinedClubIds?.includes(club.id);
@@ -24,6 +24,11 @@ const ClubCard = ({ club }: ClubCardProps) => {
     e.stopPropagation();
     if (!isAuthenticated) {
       navigate("/login");
+      return;
+    }
+
+    if (isAdmin) {
+      navigate("/dashboard");
       return;
     }
 
@@ -62,7 +67,7 @@ const ClubCard = ({ club }: ClubCardProps) => {
       </div>
       
       <CardHeader className="pb-3 flex-grow">
-        <CardTitle className="text-xl md:text-2xl group-hover:text-primary transition-colors line-clamp-1">{club.name}</CardTitle>
+         <CardTitle className="text-xl md:text-2xl group-hover:text-primary transition-colors line-clamp-1">{club.name}</CardTitle>
         <CardDescription className="text-muted-foreground/80 line-clamp-2 mt-2 leading-relaxed">{club.description}</CardDescription>
       </CardHeader>
       
@@ -84,26 +89,36 @@ const ClubCard = ({ club }: ClubCardProps) => {
       </CardContent>
       
       <CardFooter className="pt-2">
-        <Button 
-          onClick={handleClubAction}
-          disabled={isActionLoading}
-          variant={isJoined ? "outline" : "default"}
-          className={`w-full group/btn font-bold rounded-xl h-11 transition-all ${
-            isJoined ? 'border-red-500/50 hover:bg-red-500/10 hover:text-red-500' : 'shadow-lg shadow-primary/20'
-          }`}
-        >
-          {isJoined ? (
-            <>
-              <LogOut className="mr-2 h-4 w-4" />
-              Leave Club
-            </>
-          ) : (
-            <>
-              Join Club
-              <ArrowRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-            </>
-          )}
-        </Button>
+        {isAdmin ? (
+          <Button 
+            onClick={handleClubAction}
+            className="w-full group/btn font-bold rounded-xl h-11 transition-all shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700"
+          >
+            Manage Club (Admin)
+            <ArrowRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+          </Button>
+        ) : (
+          <Button 
+            onClick={handleClubAction}
+            disabled={isActionLoading}
+            variant={isJoined ? "outline" : "default"}
+            className={`w-full group/btn font-bold rounded-xl h-11 transition-all ${
+              isJoined ? 'border-red-500/50 hover:bg-red-500/10 hover:text-red-500' : 'shadow-lg shadow-primary/20'
+            }`}
+          >
+            {isJoined ? (
+              <>
+                <LogOut className="mr-2 h-4 w-4" />
+                Leave Club
+              </>
+            ) : (
+              <>
+                Join Club
+                <ArrowRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              </>
+            )}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
