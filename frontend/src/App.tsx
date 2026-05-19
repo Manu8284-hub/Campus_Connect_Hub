@@ -99,6 +99,7 @@ import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import About from "./pages/About";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -135,6 +136,7 @@ const App = () => (
                   <Route path="/login" element={<Login />} />
                   <Route path="/create-account" element={<CreateAccount />} />
                   <Route path="/logout" element={<Logout />} />
+                  <Route path="/about" element={<About />} />
 
                   {/* Protected Routes */}
                   <Route

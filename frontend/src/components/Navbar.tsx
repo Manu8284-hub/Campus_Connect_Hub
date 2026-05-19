@@ -454,9 +454,8 @@ const Navbar = () => {
     { path: "/clubs", label: "Clubs" },
     { path: "/events", label: "Events" },
     {
-      path: "https://www.chitkara.edu.in/",
+      path: "/about",
       label: "About",
-      external: true,
     },
   ];
 
