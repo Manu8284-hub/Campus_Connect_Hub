@@ -7,10 +7,11 @@ export const generateToken = (res, userId) => {
     expiresIn: "30d",
   });
 
+  const isProduction = process.env.NODE_ENV === "production";
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: false, // Set to false to allow cookies over HTTP on localhost
-    sameSite: "lax",
+    secure: isProduction, // Set to true on production (HTTPS)
+    sameSite: isProduction ? "none" : "lax", // Cross-site cookies need "none" on production
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
   
