@@ -76,33 +76,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const loginWithGoogle = async (credential: string) => {
-    if (!credential) return false;
+    if (!credential) throw new Error("No Google credential returned from Google Sign-In.");
     const payload = parseJwtPayload(credential);
-    if (!payload?.email || !payload?.name) return false;
+    if (!payload?.email || !payload?.name) throw new Error("Could not extract your email or name from Google profile.");
 
-    try {
-      const response = await fetch(apiUrl("/auth/login"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          email: payload.email,
-          name: payload.name,
-          picture: payload.picture,
-          provider: "google",
-        }),
-      });
+    const response = await fetch(apiUrl("/auth/login"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        email: payload.email,
+        name: payload.name,
+        picture: payload.picture,
+        provider: "google",
+      }),
+    });
 
-      if (!response.ok) throw new Error(await parseApiError(response));
-
-      const data = await response.json();
-      setUser(data.user || { name: payload.name, email: payload.email });
-      setIsAuthenticated(true);
-      return true;
-    } catch (error) {
-      console.error("Google login failed:", error);
-      return false;
+    if (!response.ok) {
+      const apiError = await parseApiError(response);
+      throw new Error(apiError || `Server returned ${response.status} ${response.statusText}`);
     }
+
+    const data = await response.json();
+    setUser(data.user || { name: payload.name, email: payload.email });
+    setIsAuthenticated(true);
+    return true;
   };
 
   const loginWithCredentials = async (email: string, password: string) => {

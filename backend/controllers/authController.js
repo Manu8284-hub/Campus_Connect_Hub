@@ -159,9 +159,10 @@ export const loginUser = async (req, res) => {
 
       let existingGoogleUser = db.users.find((user) => user.email === normalizedEmail);
       if (!existingGoogleUser) {
+        const safeName = typeof name === "string" ? name.trim() : "Google User";
         existingGoogleUser = {
           id: getNextLocalId(db.users),
-          name: name.trim(),
+          name: safeName,
           email: normalizedEmail,
           password: "",
           provider: "google",
@@ -212,9 +213,10 @@ export const loginUser = async (req, res) => {
       if (!existingGoogleUser) {
         console.log(`Creating new Google user: ${normalizedEmail}`);
         const id = await getNextId(User);
+        const safeName = typeof name === "string" ? name.trim() : "Google User";
         existingGoogleUser = new User({
           id,
-          name: name.trim(),
+          name: safeName,
           email: normalizedEmail,
           password: "",
           provider: "google"
