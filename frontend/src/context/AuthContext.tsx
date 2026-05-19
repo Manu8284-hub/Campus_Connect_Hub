@@ -27,9 +27,18 @@ const parseJwtPayload = (token: string) => {
     const base64Url = token.split(".")[1];
     if (!base64Url) return null;
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const payload = window.atob(base64);
-    return JSON.parse(payload) as { name?: string; email?: string; picture?: string };
-  } catch {
+    const pad = base64.length % 4;
+    const padded = pad === 2 ? base64 + "==" : pad === 3 ? base64 + "=" : base64;
+    const jsonPayload = decodeURIComponent(
+      window
+        .atob(padded)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload) as { name?: string; email?: string; picture?: string };
+  } catch (error) {
+    console.error("JWT Decode error:", error);
     return null;
   }
 };
