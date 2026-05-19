@@ -659,7 +659,7 @@ const Navbar = () => {
                 <Link to="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground px-4 py-2">
                   Login
                 </Link>
-                <Link to="/signup" className="neon-button text-sm py-2 px-5">
+                <Link to="/create-account" className="neon-button text-sm py-2 px-5">
                   Get Started
                 </Link>
               </div>

@@ -27,8 +27,8 @@ const teamMembers = [
     icon: <Code2 className="w-5 h-5" />,
     gradient: "from-blue-500 via-indigo-500 to-purple-600",
     glowColor: "blue",
-    github: "#",
-    linkedin: "#",
+    github: "https://github.com/JatinxKumar",
+    linkedin: "https://www.linkedin.com/in/jatinxkumar/",
   },
   {
     name: "Madhav",
