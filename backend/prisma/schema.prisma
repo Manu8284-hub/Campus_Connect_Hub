@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Club {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  category    String
+  members     Int      @default(0)
+  coordinator String
+  image       String?
+  featured    Boolean  @default(false)
+}
+
+model ClubMembership {
+  id         Int      @id @default(autoincrement())
+  clubId     Int
+  clubName   String
+  userName   String
+  userEmail  String
+  rollNumber String
+  reason     String
+  status     String   @default("approved")
+  joinedAt   DateTime @default(now())
+}
