@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ClubCard from "@/components/ClubCard";
 import { Input } from "@/components/ui/input";
@@ -36,7 +35,6 @@ const Clubs = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-secondary/10">
-      <Navbar />
       
       <PageHeader 
         title="Explore Clubs" 

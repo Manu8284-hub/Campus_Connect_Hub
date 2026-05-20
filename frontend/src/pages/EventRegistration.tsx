@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -103,7 +102,6 @@ const EventRegistration = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       
       <section className="bg-gradient-to-br from-accent to-accent/80 text-accent-foreground py-16">
         <div className="container mx-auto px-4">

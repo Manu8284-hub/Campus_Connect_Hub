@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode } from "react";
 import { clubs as initialClubs, Club } from "@/data/clubsData";
 import { events as initialEvents, Event } from "@/data/eventsData";
 import { apiUrl, parseApiError } from "@/lib/api";
@@ -107,40 +107,52 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const currentEmail = user?.email?.trim().toLowerCase() || "";
   const userProfile = currentEmail ? profilesByEmail[currentEmail] || null : null;
-  const joinedClubs = (userProfile?.joinedClubIds || [])
-    .map((clubId) => clubs.find((club) => club.id === clubId))
-    .filter((club): club is Club => Boolean(club));
-  const registeredEvents = (userProfile?.eventRegistrations || [])
-    .map((registration) => {
-      const event = events.find((entry) => entry.id === registration.eventId);
-      return event ? { ...registration, event } : null;
-    })
-    .filter((registration): registration is RegisteredEventActivity => Boolean(registration));
-  const attendanceScore = registeredEvents.length
-    ? Math.round(
-        (registeredEvents.filter((registration) => registration.attendanceConfirmed).length /
-          registeredEvents.length) *
-          100
-      )
-    : 0;
-  const recommendedClubs = clubs
-    .filter((club) => !joinedClubs.some((joinedClub) => joinedClub.id === club.id))
-    .map((club) => {
-      const interestMatches = (userProfile?.interests || []).filter((interest) => {
-        const normalizedInterest = interest.toLowerCase();
-        return (
-          club.category.toLowerCase().includes(normalizedInterest) ||
-          club.name.toLowerCase().includes(normalizedInterest) ||
-          club.description.toLowerCase().includes(normalizedInterest)
-        );
-      }).length;
 
-      return { club, score: interestMatches + (club.featured ? 1 : 0) };
-    })
-    .filter((entry) => entry.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3)
-    .map((entry) => entry.club);
+  const joinedClubs = useMemo(() => {
+    return (userProfile?.joinedClubIds || [])
+      .map((clubId) => clubs.find((club) => club.id === clubId))
+      .filter((club): club is Club => Boolean(club));
+  }, [userProfile?.joinedClubIds, clubs]);
+
+  const registeredEvents = useMemo(() => {
+    return (userProfile?.eventRegistrations || [])
+      .map((registration) => {
+        const event = events.find((entry) => entry.id === registration.eventId);
+        return event ? { ...registration, event } : null;
+      })
+      .filter((registration): registration is RegisteredEventActivity => Boolean(registration));
+  }, [userProfile?.eventRegistrations, events]);
+
+  const attendanceScore = useMemo(() => {
+    return registeredEvents.length
+      ? Math.round(
+          (registeredEvents.filter((registration) => registration.attendanceConfirmed).length /
+            registeredEvents.length) *
+            100
+        )
+      : 0;
+  }, [registeredEvents]);
+
+  const recommendedClubs = useMemo(() => {
+    return clubs
+      .filter((club) => !joinedClubs.some((joinedClub) => joinedClub.id === club.id))
+      .map((club) => {
+        const interestMatches = (userProfile?.interests || []).filter((interest) => {
+          const normalizedInterest = interest.toLowerCase();
+          return (
+            club.category.toLowerCase().includes(normalizedInterest) ||
+            club.name.toLowerCase().includes(normalizedInterest) ||
+            club.description.toLowerCase().includes(normalizedInterest)
+          );
+        }).length;
+
+        return { club, score: interestMatches + (club.featured ? 1 : 0) };
+      })
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map((entry) => entry.club);
+  }, [clubs, joinedClubs, userProfile?.interests]);
 
   useEffect(() => {
     const fetchClubs = async () => {

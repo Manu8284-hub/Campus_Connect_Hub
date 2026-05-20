@@ -87,6 +87,7 @@ import { AppProvider } from "./context/AppContext";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SocketProvider } from "./context/SocketContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import NotificationHandler from "./components/NotificationHandler";
 import AdminDashboard from "./pages/AdminDashboard";
 import Clubs from "./pages/Clubs";
@@ -100,6 +101,7 @@ import Logout from "./pages/Logout";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import About from "./pages/About";
+import Navbar from "./components/Navbar";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -117,11 +119,13 @@ const App = () => (
       <AuthProvider>
         <SocketProvider>
           <AppProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <NotificationHandler />
-              <BrowserRouter>
+            <NotificationProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <NotificationHandler />
+                <BrowserRouter>
+                <Navbar />
                 <Routes>
                   {/* Main Landing Page */}
                   <Route path="/" element={<Home />} />
@@ -167,6 +171,7 @@ const App = () => (
                 </Routes>
               </BrowserRouter>
             </TooltipProvider>
+          </NotificationProvider>
           </AppProvider>
         </SocketProvider>
       </AuthProvider>

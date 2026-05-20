@@ -14,7 +14,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const teamMembers = [
@@ -90,7 +89,6 @@ const fadeUp = {
 const About = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Navbar />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">

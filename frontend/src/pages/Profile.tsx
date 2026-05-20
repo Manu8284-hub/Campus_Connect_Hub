@@ -18,8 +18,6 @@ import {
   UserRound,
   Users,
 } from "lucide-react";
-
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/context/AuthContext";
 import { useAppContext } from "@/context/AppContext";
@@ -214,7 +212,6 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden">
-      <Navbar />
 
       <main className="relative px-4 py-16 md:py-24">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">

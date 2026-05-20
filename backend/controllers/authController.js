@@ -126,9 +126,29 @@ export const loginUser = async (req, res) => {
       }
       
       generateToken(res, adminUser.id);
+      const userDetail = { name: adminUser.name, email: adminUser.email, id: adminUser.id };
+
+      if (!isMongoReady()) {
+        const db = await loadLocalDb();
+        db.loginHistory.unshift({
+          id: getNextLocalId(db.loginHistory),
+          user: { name: userDetail.name, email: userDetail.email },
+          provider: normalizedProvider,
+          at: new Date().toISOString(),
+        });
+        await saveLocalDb(db);
+      } else {
+        const historyId = await getNextId(LoginHistory);
+        await new LoginHistory({
+          id: historyId,
+          user: { name: userDetail.name, email: userDetail.email },
+          provider: normalizedProvider
+        }).save();
+      }
+
       return res.json({ 
         message: "Login successful (Admin)", 
-        user: { name: adminUser.name, email: adminUser.email, id: adminUser.id } 
+        user: userDetail
       });
     }
 

@@ -1,5 +1,4 @@
 import { FormEvent, useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -35,7 +34,9 @@ const AdminDashboard = () => {
   const fetchLogins = async () => {
     setIsLoadingLogins(true);
     try {
-      const response = await fetch(apiUrl("/auth/logins"));
+      const response = await fetch(apiUrl("/auth/logins"), {
+        credentials: "include"
+      });
       if (response.ok) {
         const data = await response.json();
         setLogins(data.logins || []);
@@ -406,7 +407,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       
       <PageHeader 
         title="Admin Dashboard" 

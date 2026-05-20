@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import EventCard from "@/components/EventCard";
 import { Input } from "@/components/ui/input";
@@ -29,7 +28,6 @@ const Events = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-secondary/10">
-      <Navbar />
       
       <PageHeader 
         title="Events Calendar" 

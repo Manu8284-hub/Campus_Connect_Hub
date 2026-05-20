@@ -12,8 +12,6 @@ import {
   Loader2,
 } from "lucide-react";
 import { motion } from "framer-motion";
-
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
   Card,
@@ -252,7 +250,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white overflow-hidden">
-      <Navbar />
 
       <main className="relative flex-1 flex items-center justify-center px-4 py-20">
         {/* Background */}

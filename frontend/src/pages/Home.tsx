@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 import Hero from '@/components/sections/Hero';
@@ -13,7 +12,6 @@ import FAQ from '@/components/sections/FAQ';
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden flex flex-col">
-      <Navbar />
       <main className="flex-1 pt-20">
         <Hero />
         <Stats />

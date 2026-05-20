@@ -337,6 +337,7 @@ import { Button } from "./ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useAppContext } from "@/context/AppContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useNotifications } from "@/context/NotificationContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -403,23 +404,16 @@ const Navbar = () => {
 
   const isActive = (path: string) => location.pathname === path;
   const clubCategories = [...new Set(clubs.map((club) => club.category))].slice(0, 6);
-  const notificationItems = [
-    {
-      id: "event",
-      title: events[0]?.title || "Fresh event update",
-      description: events[0]
-        ? `${events[0].category} is open for registrations`
-        : "A new event update is waiting for you",
-      action: () => navigate("/events"),
-    },
-    {
-      id: "clubs",
-      title: `${clubs.length}+ communities live`,
-      description: "Explore new clubs and find your next campus circle",
-      action: () => navigate("/clubs"),
-    },
-  ];
-  const unreadCount = isAuthenticated ? notificationItems.length : 0;
+  
+  const { notifications, unreadCount, markAsRead, clearAll } = useNotifications();
+
+  const handleNotificationClick = (notif: any) => {
+    markAsRead(notif.id);
+    if (notif.actionPath) {
+      navigate(notif.actionPath);
+    }
+    setIsOpen(false);
+  };
 
   // ------------------------
   // Handlers
@@ -549,26 +543,33 @@ const Navbar = () => {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-80 rounded-2xl p-2">
-                    <DropdownMenuLabel className="px-3 py-2">
-                      Notifications
+                    <DropdownMenuLabel className="px-3 py-2 flex justify-between items-center">
+                      <span>Notifications</span>
+                      {notifications.length > 0 && (
+                        <button onClick={clearAll} className="text-xs text-muted-foreground hover:text-foreground">Clear All</button>
+                      )}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {notificationItems.map((item) => (
-                      <DropdownMenuItem
-                        key={item.id}
-                        className="cursor-pointer rounded-xl px-3 py-3"
-                        onClick={item.action}
-                      >
-                        <div className="space-y-1">
-                          <p className="text-sm font-semibold text-foreground">
-                            {item.title}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {item.description}
-                          </p>
-                        </div>
-                      </DropdownMenuItem>
-                    ))}
+                    {notifications.length === 0 ? (
+                      <div className="px-3 py-4 text-center text-sm text-muted-foreground">No new notifications</div>
+                    ) : (
+                      notifications.map((item) => (
+                        <DropdownMenuItem
+                          key={item.id}
+                          className={`cursor-pointer rounded-xl px-3 py-3 ${!item.read ? 'bg-primary/5' : ''}`}
+                          onClick={() => handleNotificationClick(item)}
+                        >
+                          <div className="space-y-1">
+                            <p className={`text-sm ${!item.read ? 'font-bold' : 'font-semibold'} text-foreground`}>
+                              {item.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {item.description}
+                            </p>
+                          </div>
+                        </DropdownMenuItem>
+                      ))
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -764,27 +765,33 @@ const Navbar = () => {
 
 
                 <div className="rounded-2xl border border-border/70 bg-background/70 p-3">
-                  <div className="mb-2 flex items-center gap-2">
-                    <Bell className="h-4 w-4 text-primary" />
-                    <p className="text-sm font-semibold">Notifications</p>
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Bell className="h-4 w-4 text-primary" />
+                      <p className="text-sm font-semibold">Notifications</p>
+                    </div>
+                    {notifications.length > 0 && (
+                      <button onClick={clearAll} className="text-xs text-muted-foreground hover:text-foreground">Clear</button>
+                    )}
                   </div>
-                  <div className="space-y-2">
-                    {notificationItems.map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => {
-                          item.action();
-                          setIsOpen(false);
-                        }}
-                        className="w-full rounded-xl border border-border/60 bg-background px-3 py-2 text-left"
-                      >
-                        <p className="text-sm font-medium">{item.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.description}
-                        </p>
-                      </button>
-                    ))}
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="py-2 text-center text-xs text-muted-foreground">No new notifications</div>
+                    ) : (
+                      notifications.map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => handleNotificationClick(item)}
+                          className={`w-full rounded-xl border border-border/60 ${!item.read ? 'bg-primary/5' : 'bg-background'} px-3 py-2 text-left`}
+                        >
+                          <p className={`text-sm ${!item.read ? 'font-bold' : 'font-medium'}`}>{item.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.description}
+                          </p>
+                        </button>
+                      ))
+                    )}
                   </div>
                 </div>
 
