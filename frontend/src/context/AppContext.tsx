@@ -1,9 +1,16 @@
-import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode } from "react";
-import { clubs as initialClubs, Club } from "@/data/clubsData";
-import { events as initialEvents, Event } from "@/data/eventsData";
-import { apiUrl, parseApiError } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useSocket } from "@/context/SocketContext";
+import { Club, clubs as initialClubs } from "@/data/clubsData";
+import { Event, events as initialEvents } from "@/data/eventsData";
+import { apiUrl, parseApiError } from "@/lib/api";
+import {
+    createContext,
+    ReactNode,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 
 interface SocialLinks {
   github: string;
@@ -82,7 +89,10 @@ const getStoredProfiles = () => {
   }
 };
 
-const createDefaultProfile = (email: string, displayName?: string): UserActivityProfile => ({
+const createDefaultProfile = (
+  email: string,
+  displayName?: string,
+): UserActivityProfile => ({
   email,
   displayName: displayName || "Campus User",
   bio: "",
@@ -99,14 +109,38 @@ const createDefaultProfile = (email: string, displayName?: string): UserActivity
 const createTicketCode = (eventId: number) =>
   `CCH-${eventId}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
+const normalizeProfile = (
+  profile: Partial<UserActivityProfile> & { name?: string },
+): UserActivityProfile => ({
+  email: profile.email || "",
+  displayName: profile.displayName || profile.name || "Campus User",
+  bio: profile.bio || "",
+  interests: Array.isArray(profile.interests) ? profile.interests : [],
+  socialLinks: {
+    github: profile.socialLinks?.github || "",
+    linkedin: profile.socialLinks?.linkedin || "",
+    portfolio: profile.socialLinks?.portfolio || "",
+  },
+  joinedClubIds: Array.isArray(profile.joinedClubIds)
+    ? profile.joinedClubIds
+    : [],
+  eventRegistrations: Array.isArray(profile.eventRegistrations)
+    ? profile.eventRegistrations
+    : [],
+});
+
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [clubs, setClubs] = useState<Club[]>(initialClubs);
   const [events, setEvents] = useState<Event[]>(initialEvents);
-  const [profilesByEmail, setProfilesByEmail] = useState<Record<string, UserActivityProfile>>({});
+  const [profilesByEmail, setProfilesByEmail] = useState<
+    Record<string, UserActivityProfile>
+  >({});
   const { user } = useAuth();
 
   const currentEmail = user?.email?.trim().toLowerCase() || "";
-  const userProfile = currentEmail ? profilesByEmail[currentEmail] || null : null;
+  const userProfile = currentEmail
+    ? profilesByEmail[currentEmail] || null
+    : null;
 
   const joinedClubs = useMemo(() => {
     return (userProfile?.joinedClubIds || [])
@@ -120,31 +154,39 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const event = events.find((entry) => entry.id === registration.eventId);
         return event ? { ...registration, event } : null;
       })
-      .filter((registration): registration is RegisteredEventActivity => Boolean(registration));
+      .filter((registration): registration is RegisteredEventActivity =>
+        Boolean(registration),
+      );
   }, [userProfile?.eventRegistrations, events]);
 
   const attendanceScore = useMemo(() => {
     return registeredEvents.length
       ? Math.round(
-          (registeredEvents.filter((registration) => registration.attendanceConfirmed).length /
+          (registeredEvents.filter(
+            (registration) => registration.attendanceConfirmed,
+          ).length /
             registeredEvents.length) *
-            100
+            100,
         )
       : 0;
   }, [registeredEvents]);
 
   const recommendedClubs = useMemo(() => {
     return clubs
-      .filter((club) => !joinedClubs.some((joinedClub) => joinedClub.id === club.id))
+      .filter(
+        (club) => !joinedClubs.some((joinedClub) => joinedClub.id === club.id),
+      )
       .map((club) => {
-        const interestMatches = (userProfile?.interests || []).filter((interest) => {
-          const normalizedInterest = interest.toLowerCase();
-          return (
-            club.category.toLowerCase().includes(normalizedInterest) ||
-            club.name.toLowerCase().includes(normalizedInterest) ||
-            club.description.toLowerCase().includes(normalizedInterest)
-          );
-        }).length;
+        const interestMatches = (userProfile?.interests || []).filter(
+          (interest) => {
+            const normalizedInterest = interest.toLowerCase();
+            return (
+              club.category.toLowerCase().includes(normalizedInterest) ||
+              club.name.toLowerCase().includes(normalizedInterest) ||
+              club.description.toLowerCase().includes(normalizedInterest)
+            );
+          },
+        ).length;
 
         return { club, score: interestMatches + (club.featured ? 1 : 0) };
       })
@@ -157,10 +199,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchClubs = async () => {
       try {
-        const response = await fetch(apiUrl("/api/clubs"), { credentials: "include" });
+        const response = await fetch(apiUrl("/api/clubs"), {
+          credentials: "include",
+        });
         if (!response.ok) return;
         const data = await response.json();
-        if (Array.isArray(data.clubs)) setClubs(data.clubs);
+        if (Array.isArray(data.clubs) && data.clubs.length > 0) {
+          setClubs(data.clubs);
+        }
       } catch (err) {
         console.error("Failed to fetch clubs:", err);
       }
@@ -168,10 +214,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const fetchEvents = async () => {
       try {
-        const response = await fetch(apiUrl("/api/events"), { credentials: "include" });
+        const response = await fetch(apiUrl("/api/events"), {
+          credentials: "include",
+        });
         if (!response.ok) return;
         const data = await response.json();
-        if (Array.isArray(data.events)) setEvents(data.events);
+        if (Array.isArray(data.events) && data.events.length > 0) {
+          setEvents(data.events);
+        }
       } catch (err) {
         console.error("Failed to fetch events:", err);
       }
@@ -195,7 +245,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const handleEventUpdated = (data: { event: Event }) => {
       setEvents((prev) =>
-        prev.map((e) => (e.id === data.event.id ? data.event : e))
+        prev.map((e) => (e.id === data.event.id ? data.event : e)),
       );
     };
 
@@ -212,7 +262,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const handleClubUpdated = (data: { club: Club }) => {
       setClubs((prev) =>
-        prev.map((c) => (c.id === data.club.id ? data.club : c))
+        prev.map((c) => (c.id === data.club.id ? data.club : c)),
       );
     };
 
@@ -244,22 +294,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const fetchProfile = async () => {
       try {
-        const response = await fetch(apiUrl(`/auth/profile/${currentEmail}`), { credentials: "include" });
+        const response = await fetch(apiUrl(`/auth/profile/${currentEmail}`), {
+          credentials: "include",
+        });
         if (response.ok) {
           const data = await response.json();
           if (data.profile) {
-            setProfilesByEmail(prev => ({
+            setProfilesByEmail((prev) => ({
               ...prev,
-              [currentEmail]: {
-                ...data.profile,
-                displayName: data.profile.name || data.profile.displayName
-              }
+              [currentEmail]: normalizeProfile(data.profile),
             }));
           }
         } else {
-          setProfilesByEmail(prev => ({
+          setProfilesByEmail((prev) => ({
             ...prev,
-            [currentEmail]: createDefaultProfile(currentEmail, user?.name)
+            [currentEmail]: createDefaultProfile(currentEmail, user?.name),
           }));
         }
       } catch (error) {
@@ -271,14 +320,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [currentEmail, user?.name]);
 
   const updateCurrentProfile = async (
-    updater: (profile: UserActivityProfile) => UserActivityProfile
+    updater: (profile: UserActivityProfile) => UserActivityProfile,
   ) => {
     if (!currentEmail) {
       return;
     }
 
-    const baseProfile = profilesByEmail[currentEmail] || createDefaultProfile(currentEmail, user?.name);
-    const updatedProfile = updater(baseProfile);
+    const baseProfile = normalizeProfile(
+      profilesByEmail[currentEmail] ||
+        createDefaultProfile(currentEmail, user?.name),
+    );
+    const updatedProfile = normalizeProfile(updater(baseProfile));
 
     setProfilesByEmail((prev) => ({
       ...prev,
@@ -335,7 +387,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setClubs((prev) =>
-      prev.map((club) => (club.id === payload.club!.id ? payload.club! : club))
+      prev.map((club) => (club.id === payload.club!.id ? payload.club! : club)),
     );
   };
 
@@ -390,7 +442,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setEvents((prev) =>
-      prev.map((event) => (event.id === payload.event!.id ? payload.event! : event))
+      prev.map((event) =>
+        event.id === payload.event!.id ? payload.event! : event,
+      ),
     );
   };
 
@@ -419,12 +473,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       if (response.ok) {
         const data = await response.json();
         if (data.profile) {
-          setProfilesByEmail(prev => ({
+          setProfilesByEmail((prev) => ({
             ...prev,
-            [currentEmail]: {
-              ...data.profile,
-              displayName: data.profile.name || data.profile.displayName
-            }
+            [currentEmail]: normalizeProfile(data.profile),
           }));
         }
       }
@@ -445,12 +496,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       if (response.ok) {
         const data = await response.json();
         if (data.profile) {
-          setProfilesByEmail(prev => ({
+          setProfilesByEmail((prev) => ({
             ...prev,
-            [currentEmail]: {
-              ...data.profile,
-              displayName: data.profile.name || data.profile.displayName
-            }
+            [currentEmail]: normalizeProfile(data.profile),
           }));
         }
       }
@@ -465,7 +513,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ ...formData, clubName: clubs.find(c => c.id === clubId)?.name }),
+        body: JSON.stringify({
+          ...formData,
+          clubName: clubs.find((c) => c.id === clubId)?.name,
+        }),
       });
 
       if (!response.ok) {
@@ -480,21 +531,24 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const registerForEvent = async (eventId: number) => {
-    const existingRegistration = userProfile?.eventRegistrations.some(
-      (registration) => registration.eventId === eventId
+    const existingRegistration = (userProfile?.eventRegistrations || []).some(
+      (registration) => registration.eventId === eventId,
     );
     if (existingRegistration) {
       throw new Error("You are already registered for this event.");
     }
 
-    const eventToRegister = events.find(e => e.id === eventId);
-    if (!eventToRegister || eventToRegister.currentParticipants >= eventToRegister.maxParticipants) {
+    const eventToRegister = events.find((e) => e.id === eventId);
+    if (
+      !eventToRegister ||
+      eventToRegister.currentParticipants >= eventToRegister.maxParticipants
+    ) {
       throw new Error("Event is full or not found.");
     }
 
     const updatedEvent = {
       ...eventToRegister,
-      currentParticipants: eventToRegister.currentParticipants + 1
+      currentParticipants: eventToRegister.currentParticipants + 1,
     };
 
     await updateEvent(updatedEvent);
@@ -521,7 +575,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       bio: updates.bio ?? profile.bio,
       interests: updates.interests ?? profile.interests,
       joinedClubIds: updates.joinedClubIds ?? profile.joinedClubIds,
-      eventRegistrations: updates.eventRegistrations ?? profile.eventRegistrations,
+      eventRegistrations:
+        updates.eventRegistrations ?? profile.eventRegistrations,
       socialLinks: {
         ...profile.socialLinks,
         ...updates.socialLinks,
@@ -532,15 +587,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const markEventAttendance = (eventId: number) => {
     updateCurrentProfile((profile) => ({
       ...profile,
-      eventRegistrations: profile.eventRegistrations.map((registration) =>
-        registration.eventId === eventId
-          ? {
-              ...registration,
-              attendanceConfirmed: true,
-              certificateIssuedAt:
-                registration.certificateIssuedAt || new Date().toISOString(),
-            }
-          : registration
+      eventRegistrations: (profile.eventRegistrations || []).map(
+        (registration) =>
+          registration.eventId === eventId
+            ? {
+                ...registration,
+                attendanceConfirmed: true,
+                certificateIssuedAt:
+                  registration.certificateIssuedAt || new Date().toISOString(),
+              }
+            : registration,
       ),
     }));
   };

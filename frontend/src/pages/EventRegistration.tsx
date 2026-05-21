@@ -1,14 +1,21 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppContext } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const EventRegistration = () => {
   const { id } = useParams();
@@ -23,7 +30,7 @@ const EventRegistration = () => {
     phone: "",
   });
 
-  const event = events.find(e => e.id === Number(id));
+  const event = events.find((e) => e.id === Number(id));
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -32,7 +39,9 @@ const EventRegistration = () => {
         description: "Please sign in before registering for an event.",
         variant: "destructive",
       });
-      navigate("/login", { state: { from: { pathname: `/events/${id}/register` } } });
+      navigate("/login", {
+        state: { from: { pathname: `/events/${id}/register` } },
+      });
     } else if (isAdmin) {
       toast({
         title: "Admin Action Restricted",
@@ -90,7 +99,10 @@ const EventRegistration = () => {
     } catch (error) {
       toast({
         title: "Registration failed",
-        description: error instanceof Error ? error.message : "Unable to register for this event.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Unable to register for this event.",
         variant: "destructive",
       });
     }
@@ -101,28 +113,39 @@ const EventRegistration = () => {
   const spotsLeft = event.maxParticipants - event.currentParticipants;
 
   return (
-    <div className="min-h-screen flex flex-col">
-      
-      <section className="bg-gradient-to-br from-accent to-accent/80 text-accent-foreground py-16">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Register for {event.title}</h1>
-          <p className="text-lg text-accent-foreground/90 max-w-2xl">
-            Secure your spot for this exciting event
-          </p>
+    <div className="min-h-screen flex flex-col bg-slate-950 text-white overflow-hidden">
+      <section className="relative overflow-hidden pt-28 md:pt-32 pb-16 bg-gradient-to-br from-fuchsia-600 via-pink-600 to-rose-500 text-white">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-white/15 blur-3xl" />
+          <div className="absolute -bottom-20 right-1/4 h-80 w-80 rounded-full bg-black/10 blur-3xl" />
+        </div>
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Register for {event.title}
+            </h1>
+            <p className="text-lg text-white/90 max-w-2xl">
+              Secure your spot for this exciting event
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      <section className="py-16 flex-1">
+      <section className="py-16 flex-1 bg-slate-950">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="grid md:grid-cols-2 gap-8">
-            <Card>
+            <Card className="border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl rounded-3xl">
               <CardHeader>
                 <CardTitle>Event Details</CardTitle>
                 <CardDescription>By {event.club}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <img 
-                  src={event.image} 
+                <img
+                  src={event.image}
                   alt={event.title}
                   className="w-full h-48 object-cover rounded-lg"
                 />
@@ -130,11 +153,13 @@ const EventRegistration = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-accent" />
-                    <span>{new Date(event.date).toLocaleDateString('en-US', { 
-                      month: 'long', 
-                      day: 'numeric', 
-                      year: 'numeric' 
-                    })}</span>
+                    <span>
+                      {new Date(event.date).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-accent" />
@@ -146,18 +171,22 @@ const EventRegistration = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-accent" />
-                    <span>{event.currentParticipants}/{event.maxParticipants} registered</span>
+                    <span>
+                      {event.currentParticipants}/{event.maxParticipants}{" "}
+                      registered
+                    </span>
                   </div>
                 </div>
                 <div className="bg-accent/10 p-3 rounded-lg">
                   <p className="text-sm font-medium">
-                    ⚡ Only {spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left!
+                    ⚡ Only {spotsLeft} {spotsLeft === 1 ? "spot" : "spots"}{" "}
+                    left!
                   </p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl rounded-3xl">
               <CardHeader>
                 <CardTitle>Registration Form</CardTitle>
                 <CardDescription>Fill in your details</CardDescription>
@@ -170,7 +199,9 @@ const EventRegistration = () => {
                       id="name"
                       required
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                       placeholder="Enter your full name"
                     />
                   </div>
@@ -181,7 +212,9 @@ const EventRegistration = () => {
                       type="email"
                       required
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                       placeholder="your.email@college.edu"
                     />
                   </div>
@@ -191,7 +224,9 @@ const EventRegistration = () => {
                       id="rollNumber"
                       required
                       value={formData.rollNumber}
-                      onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, rollNumber: e.target.value })
+                      }
                       placeholder="Enter your roll number"
                     />
                   </div>
@@ -202,13 +237,21 @@ const EventRegistration = () => {
                       type="tel"
                       required
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
                       placeholder="Enter your phone number"
                     />
                   </div>
                   <div className="flex gap-3">
-                    <Button type="submit" className="flex-1">Confirm Registration</Button>
-                    <Button type="button" variant="outline" onClick={() => navigate("/events")}>
+                    <Button type="submit" className="flex-1">
+                      Confirm Registration
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => navigate("/events")}
+                    >
                       Cancel
                     </Button>
                   </div>

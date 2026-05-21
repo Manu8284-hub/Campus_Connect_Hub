@@ -1,15 +1,22 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppContext } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Users, UserCircle } from "lucide-react";
+import { motion } from "framer-motion";
+import { UserCircle, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const JoinClub = () => {
   const { id } = useParams();
@@ -24,7 +31,7 @@ const JoinClub = () => {
     reason: "",
   });
 
-  const club = clubs.find(c => c.id === Number(id));
+  const club = clubs.find((c) => c.id === Number(id));
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -33,7 +40,9 @@ const JoinClub = () => {
         description: "Please sign in before joining a club.",
         variant: "destructive",
       });
-      navigate("/login", { state: { from: { pathname: `/clubs/${id}/join` } } });
+      navigate("/login", {
+        state: { from: { pathname: `/clubs/${id}/join` } },
+      });
     } else if (isAdmin) {
       toast({
         title: "Admin Action Restricted",
@@ -77,7 +86,8 @@ const JoinClub = () => {
     } catch (error) {
       toast({
         title: "Join failed",
-        description: error instanceof Error ? error.message : "Unable to join this club.",
+        description:
+          error instanceof Error ? error.message : "Unable to join this club.",
         variant: "destructive",
       });
     }
@@ -86,28 +96,39 @@ const JoinClub = () => {
   if (!club) return null;
 
   return (
-    <div className="min-h-screen flex flex-col">
-      
-      <section className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground py-16">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Join {club.name}</h1>
-          <p className="text-lg text-primary-foreground/90 max-w-2xl">
-            Fill out the form below to become a member
-          </p>
+    <div className="min-h-screen flex flex-col bg-slate-950 text-white overflow-hidden">
+      <section className="relative overflow-hidden pt-28 md:pt-32 pb-16 bg-gradient-to-br from-sky-600 via-cyan-600 to-blue-600 text-white">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-white/15 blur-3xl" />
+          <div className="absolute -bottom-20 right-1/4 h-80 w-80 rounded-full bg-black/10 blur-3xl" />
+        </div>
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Join {club.name}
+            </h1>
+            <p className="text-lg text-white/90 max-w-2xl">
+              Fill out the form below to become a member
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      <section className="py-16 flex-1">
+      <section className="py-16 flex-1 bg-slate-950">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="grid md:grid-cols-2 gap-8">
-            <Card>
+            <Card className="border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl rounded-3xl">
               <CardHeader>
                 <CardTitle>Club Information</CardTitle>
                 <CardDescription>About {club.name}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <img 
-                  src={club.image} 
+                <img
+                  src={club.image}
                   alt={club.name}
                   className="w-full h-48 object-cover rounded-lg"
                 />
@@ -125,7 +146,7 @@ const JoinClub = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl rounded-3xl">
               <CardHeader>
                 <CardTitle>Membership Form</CardTitle>
                 <CardDescription>Tell us about yourself</CardDescription>
@@ -138,7 +159,9 @@ const JoinClub = () => {
                       id="name"
                       required
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                       placeholder="Enter your full name"
                     />
                   </div>
@@ -149,7 +172,9 @@ const JoinClub = () => {
                       type="email"
                       required
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                       placeholder="your.email@college.edu"
                     />
                   </div>
@@ -159,7 +184,9 @@ const JoinClub = () => {
                       id="rollNumber"
                       required
                       value={formData.rollNumber}
-                      onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, rollNumber: e.target.value })
+                      }
                       placeholder="Enter your roll number"
                     />
                   </div>
@@ -169,14 +196,22 @@ const JoinClub = () => {
                       id="reason"
                       required
                       value={formData.reason}
-                      onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, reason: e.target.value })
+                      }
                       placeholder="Tell us why you're interested..."
                       rows={4}
                     />
                   </div>
                   <div className="flex gap-3">
-                    <Button type="submit" className="flex-1">Submit Application</Button>
-                    <Button type="button" variant="outline" onClick={() => navigate("/clubs")}>
+                    <Button type="submit" className="flex-1">
+                      Submit Application
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => navigate("/clubs")}
+                    >
                       Cancel
                     </Button>
                   </div>

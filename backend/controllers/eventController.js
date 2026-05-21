@@ -1,18 +1,27 @@
-import Event from "../models/Event.js";
 import { isMongoReady } from "../config/db.js";
-import { loadLocalDb, saveLocalDb, getNextLocalId, removeMongooseMetadata } from "../utils/helpers.js";
+import Event from "../models/Event.js";
+import {
+    getNextLocalId,
+    loadLocalDb,
+    removeMongooseMetadata,
+    saveLocalDb,
+} from "../utils/helpers.js";
 
 export const getEvents = async (req, res) => {
   try {
     if (!isMongoReady()) {
       const db = await loadLocalDb();
-      return res.json({ events: (db.events || []).sort((a, b) => b.id - a.id) });
+      return res.json({
+        events: (db.events || []).sort((a, b) => b.id - a.id),
+      });
     }
 
     const events = await Event.find().sort({ createdAt: -1 });
     res.json({ events: events.map(removeMongooseMetadata) });
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch events", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch events", error: err.message });
   }
 };
 
@@ -21,22 +30,22 @@ export const createEvent = async (req, res) => {
     if (!isMongoReady()) {
       const db = await loadLocalDb();
       if (!db.events) db.events = [];
-      
+
       const newEvent = {
         ...req.body,
         id: getNextLocalId(db.events),
         currentParticipants: 0,
         registrationOpen: true,
       };
-      
+
       db.events.push(newEvent);
       await saveLocalDb(db);
-      
+
       const io = req.app.get("io");
       if (io) {
-        io.emit("eventCreated", { 
+        io.emit("eventCreated", {
           message: `New Event: ${newEvent.title}`,
-          event: newEvent 
+          event: newEvent,
         });
       }
       return res.status(201).json({ event: newEvent });
@@ -44,27 +53,29 @@ export const createEvent = async (req, res) => {
 
     const lastEvent = await Event.findOne().sort({ id: -1 });
     const nextId = lastEvent ? lastEvent.id + 1 : 1;
-    
+
     const newEvent = new Event({
       ...req.body,
-      id: nextId
+      id: nextId,
     });
-    
+
     const savedEvent = await newEvent.save();
     const eventData = removeMongooseMetadata(savedEvent);
-    
+
     // Emit real-time notification
     const io = req.app.get("io");
     if (io) {
-      io.emit("eventCreated", { 
+      io.emit("eventCreated", {
         message: `New Event: ${eventData.title}`,
-        event: eventData 
+        event: eventData,
       });
     }
 
     res.status(201).json({ event: eventData });
   } catch (err) {
-    res.status(500).json({ message: "Failed to create event", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to create event", error: err.message });
   }
 };
 
@@ -73,24 +84,26 @@ export const updateEvent = async (req, res) => {
   try {
     if (!isMongoReady()) {
       const db = await loadLocalDb();
-      const eventIndex = db.events.findIndex(e => e.id === parseInt(id));
-      if (eventIndex === -1) {
-        return res.status(404).json({ message: "Event not found" });
-      }
-      
+      const eventIndex = db.events.findIndex((e) => e.id === parseInt(id));
       const updatedEvent = {
-        ...db.events[eventIndex],
-        ...req.body
+        ...(eventIndex === -1 ? {} : db.events[eventIndex]),
+        ...req.body,
+        id: parseInt(id),
       };
-      
-      db.events[eventIndex] = updatedEvent;
+
+      if (eventIndex === -1) {
+        db.events.push(updatedEvent);
+      } else {
+        db.events[eventIndex] = updatedEvent;
+      }
+
       await saveLocalDb(db);
-      
+
       const io = req.app.get("io");
       if (io) {
-        io.emit("eventUpdated", { 
+        io.emit("eventUpdated", {
           message: `Event Updated: ${updatedEvent.title}`,
-          event: updatedEvent 
+          event: updatedEvent,
         });
       }
       return res.json({ event: updatedEvent });
@@ -98,26 +111,25 @@ export const updateEvent = async (req, res) => {
 
     const updatedEvent = await Event.findOneAndUpdate(
       { id: parseInt(id) },
-      { $set: req.body },
-      { new: true }
+      { $set: { ...req.body, id: parseInt(id) } },
+      { new: true, upsert: true, setDefaultsOnInsert: true },
     );
-    if (!updatedEvent) {
-      return res.status(404).json({ message: "Event not found" });
-    }
     const eventData = removeMongooseMetadata(updatedEvent);
 
     // Emit real-time notification
     const io = req.app.get("io");
     if (io) {
-      io.emit("eventUpdated", { 
+      io.emit("eventUpdated", {
         message: `Event Updated: ${eventData.title}`,
-        event: eventData 
+        event: eventData,
       });
     }
 
     res.json({ event: eventData });
   } catch (err) {
-    res.status(500).json({ message: "Failed to update event", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to update event", error: err.message });
   }
 };
 
@@ -126,19 +138,19 @@ export const deleteEvent = async (req, res) => {
   try {
     if (!isMongoReady()) {
       const db = await loadLocalDb();
-      const eventIndex = db.events.findIndex(e => e.id === parseInt(id));
+      const eventIndex = db.events.findIndex((e) => e.id === parseInt(id));
       if (eventIndex === -1) {
         return res.status(404).json({ message: "Event not found" });
       }
-      
+
       const [deletedEvent] = db.events.splice(eventIndex, 1);
       await saveLocalDb(db);
-      
+
       const io = req.app.get("io");
       if (io) {
-        io.emit("eventDeleted", { 
+        io.emit("eventDeleted", {
           message: `Event Deleted: ${deletedEvent.title}`,
-          id: parseInt(id) 
+          id: parseInt(id),
         });
       }
       return res.json({ message: "Event deleted successfully" });
@@ -152,15 +164,17 @@ export const deleteEvent = async (req, res) => {
     // Emit real-time notification
     const io = req.app.get("io");
     if (io) {
-      io.emit("eventDeleted", { 
+      io.emit("eventDeleted", {
         message: `Event Deleted: ${deletedEvent.title}`,
-        id: parseInt(id) 
+        id: parseInt(id),
       });
     }
 
     res.json({ message: "Event deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Failed to delete event", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to delete event", error: err.message });
   }
 };
 
@@ -177,4 +191,3 @@ export const sendAnnouncement = async (req, res) => {
 
   res.json({ message: "Announcement sent successfully" });
 };
-

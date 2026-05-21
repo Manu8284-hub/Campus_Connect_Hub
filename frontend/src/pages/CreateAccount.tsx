@@ -1,13 +1,28 @@
-import { FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
+import {
+    ArrowRight,
+    Eye,
+    EyeOff,
+    Lock,
+    Mail,
+    Sparkles,
+    User,
+} from "lucide-react";
+import { FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const CreateAccount = () => {
   const { registerWithCredentials, loginWithCredentials } = useAuth();
@@ -58,7 +73,8 @@ const CreateAccount = () => {
     } catch (error) {
       toast({
         title: "Account creation failed",
-        description: error instanceof Error ? error.message : "Unable to create account.",
+        description:
+          error instanceof Error ? error.message : "Unable to create account.",
         variant: "destructive",
       });
     } finally {
@@ -67,96 +83,151 @@ const CreateAccount = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-slate-950 text-white overflow-hidden flex flex-col">
+      <main className="relative flex-1 flex items-center justify-center px-4 py-20 pt-32 md:pt-28">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-sky-500/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse" />
+        </div>
 
-      <main className="flex-1 container mx-auto px-4 py-12 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Create Account</CardTitle>
-            <CardDescription>Create your account to access the admin dashboard.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <form onSubmit={handleCreateAccount} className="space-y-3">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Your full name"
-                  required
-                />
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="relative z-10 w-full max-w-md"
+        >
+          <Card className="border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl rounded-3xl">
+            <CardHeader className="space-y-6 text-center pb-8">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-sky-500 to-indigo-600 shadow-2xl shadow-sky-500/30">
+                <Sparkles className="h-10 w-10 text-white" />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="you@college.edu"
-                  required
-                />
+              <div>
+                <CardTitle className="text-4xl font-bold text-white">
+                  Create Account
+                </CardTitle>
+                <CardDescription className="mt-3 text-slate-400 text-base">
+                  Create your account to access the dashboard.
+                </CardDescription>
               </div>
+            </CardHeader>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    placeholder="At least 6 characters"
-                    required
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+            <CardContent className="space-y-6">
+              <form onSubmit={handleCreateAccount} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                    <Input
+                      id="name"
+                      type="text"
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      placeholder="Your full name"
+                      required
+                      className="h-12 pl-12 bg-slate-900/70 border-slate-700 text-white"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={(event) => setConfirmPassword(event.target.value)}
-                    placeholder="Re-enter your password"
-                    required
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
-                    tabIndex={-1}
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      placeholder="you@college.edu"
+                      required
+                      className="h-12 pl-12 bg-slate-900/70 border-slate-700 text-white"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Creating account..." : "Create Account"}
-              </Button>
-            </form>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      placeholder="At least 6 characters"
+                      required
+                      className="h-12 pl-12 pr-12 bg-slate-900/70 border-slate-700 text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
 
-            <p className="text-xs text-muted-foreground text-center">
-              Already have an account? <Link to="/login" className="font-medium underline underline-offset-4">Login here</Link>
-            </p>
-          </CardContent>
-        </Card>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(event) =>
+                        setConfirmPassword(event.target.value)
+                      }
+                      placeholder="Re-enter your password"
+                      required
+                      className="h-12 pl-12 pr-12 bg-slate-900/70 border-slate-700 text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                      tabIndex={-1}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full h-12 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-lg shadow-sky-500/25"
+                >
+                  {isSubmitting ? "Creating account..." : "Create Account"}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </form>
+
+              <p className="text-center text-sm text-slate-400">
+                Already have an account?{" "}
+                <Link
+                  to="/login"
+                  className="font-semibold text-sky-400 hover:text-sky-300"
+                >
+                  Login here
+                </Link>
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
       </main>
 
       <Footer />
