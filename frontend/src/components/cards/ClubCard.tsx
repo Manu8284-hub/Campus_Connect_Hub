@@ -12,7 +12,7 @@ export default function ClubCard({ club, index = 0, view = 'grid' }: { club: Clu
         viewport={{ once: true }}
         transition={{ delay: index * 0.05 }}
       >
-        <Link to={`/clubs/${club.id}`} className="glass glow-border rounded-2xl p-4 flex gap-5 items-center hover:shadow-glow-soft transition-all group">
+        <Link to="/clubs" className="glass glow-border rounded-2xl p-4 flex gap-5 items-center hover:shadow-glow-soft transition-all group">
           <div className="relative w-32 h-24 rounded-xl overflow-hidden flex-shrink-0">
             <img src={club.image} alt={club.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
             <div className={`absolute inset-0 bg-gradient-to-tr ${club.color} opacity-30 mix-blend-overlay`} />
@@ -39,7 +39,7 @@ export default function ClubCard({ club, index = 0, view = 'grid' }: { club: Clu
       transition={{ delay: index * 0.06, duration: 0.5 }}
       whileHover={{ y: -6 }}
     >
-      <Link to={`/clubs/${club.id}`} className="glass glow-border rounded-2xl overflow-hidden block group hover:shadow-glow-soft transition-all">
+      <Link to="/clubs" className="glass glow-border rounded-2xl overflow-hidden block group hover:shadow-glow-soft transition-all">
         <div className="relative h-44 overflow-hidden">
           <img src={club.image} alt={club.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
           <div className={`absolute inset-0 bg-gradient-to-tr ${club.color} opacity-40 mix-blend-overlay`} />

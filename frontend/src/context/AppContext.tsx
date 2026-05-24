@@ -58,7 +58,7 @@ interface AppContextType {
   joinClub: (clubId: number) => Promise<void>;
   leaveClub: (clubId: number) => Promise<void>;
   submitClubApplication: (clubId: number, formData: any) => Promise<void>;
-  updateUserProfile: (updates: Partial<UserActivityProfile>) => void;
+  updateUserProfile: (updates: Partial<UserActivityProfile>) => Promise<void>;
   markEventAttendance: (eventId: number) => void;
 }
 
@@ -332,20 +332,42 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     );
     const updatedProfile = normalizeProfile(updater(baseProfile));
 
-    setProfilesByEmail((prev) => ({
-      ...prev,
-      [currentEmail]: updatedProfile,
-    }));
+    const oldProfile = profilesByEmail[currentEmail];
+
+    setProfilesByEmail((prev) => {
+      const next = { ...prev, [currentEmail]: updatedProfile };
+      if (updatedProfile.email && updatedProfile.email.trim().toLowerCase() !== currentEmail) {
+        next[updatedProfile.email.trim().toLowerCase()] = updatedProfile;
+      }
+      return next;
+    });
 
     try {
-      await fetch(apiUrl(`/auth/profile/${currentEmail}`), {
+      const response = await fetch(apiUrl(`/auth/profile/${currentEmail}`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(updatedProfile),
       });
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (oldProfile) {
+          setProfilesByEmail((prev) => ({
+            ...prev,
+            [currentEmail]: oldProfile,
+          }));
+        }
+        throw new Error(errorData.message || "Failed to sync profile with backend");
+      }
     } catch (error) {
       console.error("Failed to sync profile with backend:", error);
+      if (oldProfile) {
+        setProfilesByEmail((prev) => ({
+          ...prev,
+          [currentEmail]: oldProfile,
+        }));
+      }
+      throw error;
     }
   };
 
@@ -567,11 +589,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
-  const updateUserProfile = (updates: Partial<UserActivityProfile>) => {
-    updateCurrentProfile((profile) => ({
+  const updateUserProfile = async (updates: Partial<UserActivityProfile>) => {
+    await updateCurrentProfile((profile) => ({
       ...profile,
       ...updates,
       displayName: updates.displayName ?? profile.displayName,
+      email: updates.email ?? profile.email,
       bio: updates.bio ?? profile.bio,
       interests: updates.interests ?? profile.interests,
       joinedClubIds: updates.joinedClubIds ?? profile.joinedClubIds,

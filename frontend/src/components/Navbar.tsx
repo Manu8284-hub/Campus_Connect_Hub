@@ -380,7 +380,7 @@ const Navbar = () => {
   // Utility Functions
   // ------------------------
   const formatName = (name?: string) => {
-    if (!name) return "Campus User";
+    if (!name) return "Jatu Sharma";
 
     return name
       .split(" ")
@@ -591,7 +591,7 @@ const Navbar = () => {
                           {formatName(user?.name)}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
-                          Logged In
+                          Computer Science & Engineering
                         </p>
                       </div>
 

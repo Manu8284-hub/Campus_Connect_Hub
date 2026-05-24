@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { generateToken, clearToken } from './jwt.js';
+import { generateToken, clearToken } from '../../utils/jwt.js';
 
 describe('JWT Utils', () => {
   it('should generate a token and set it in a cookie', () => {

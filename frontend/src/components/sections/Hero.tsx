@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Play, Users, CalendarDays, Radio } from 'lucide-react';
-import orbImage from '@/assets/hero-orb.png';
+import clubHubImage from '@/assets/hero-orb.png';
 
 const floatingCards = [
   {
@@ -94,8 +94,8 @@ export default function Hero() {
             <div className="absolute w-[60%] aspect-square rounded-full bg-neon-purple/30 blur-3xl -translate-x-8 -translate-y-8 pointer-events-none" />
 
             <motion.img
-              src={orbImage}
-              alt="CampusHub glowing orb"
+              src={clubHubImage}
+              alt="College Club and Event Management Hub"
               width={1024}
               height={1024}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -105,7 +105,7 @@ export default function Hero() {
                 scale: { duration: 1.2, delay: 0.3, ease: 'easeOut' },
                 y: { duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1.2 },
               }}
-              className="relative z-10 w-[95%] max-w-[620px] object-contain drop-shadow-[0_0_80px_hsl(var(--neon-purple)/0.6)]"
+              className="relative z-10 w-[95%] max-w-[620px] object-contain rounded-[2rem] overflow-hidden drop-shadow-[0_0_80px_hsl(var(--neon-purple)/0.6)]"
             />
 
             {/* Floating glass cards */}

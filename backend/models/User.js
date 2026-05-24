@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String },
   provider: { type: String, default: "credentials" },
+  picture: { type: String, default: "" },
   bio: { type: String, default: "" },
   interests: { type: [String], default: [] },
   socialLinks: {
@@ -25,9 +26,9 @@ const UserSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-UserSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function () {
   if (!this.isModified("password")) {
-    next();
+    return;
   }
 
   if (this.password) {

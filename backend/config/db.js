@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import Club from "../models/Club.js";
-
-
+import prisma from "./prisma.js";
 
 export const isMongoReady = () => mongoose.connection.readyState === 1;
 
@@ -28,5 +27,12 @@ export const connectDB = async () => {
     }
   } catch (err) {
     console.error("MongoDB connection error:", err);
+  }
+
+  try {
+    await prisma.$connect();
+    console.log("successfully connected to PostgreSQL");
+  } catch (err) {
+    console.log("successfully connected to PostgreSQL");
   }
 };

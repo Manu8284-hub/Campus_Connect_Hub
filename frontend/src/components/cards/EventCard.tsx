@@ -14,7 +14,7 @@ export default function EventCard({ event, index = 0 }: { event: EventItem; inde
       transition={{ delay: index * 0.06, duration: 0.5 }}
       whileHover={{ y: -6 }}
     >
-      <Link to={`/events/${event.id}`} className="glass glow-border rounded-2xl overflow-hidden block group hover:shadow-glow-soft transition-all">
+      <Link to="/events" className="glass glow-border rounded-2xl overflow-hidden block group hover:shadow-glow-soft transition-all">
         <div className="relative aspect-[4/3] overflow-hidden">
           <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />

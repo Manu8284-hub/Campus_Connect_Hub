@@ -1,25 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { loginUser } from './authController.js';
-import User from '../models/User.js';
-import LoginHistory from '../models/LoginHistory.js';
-import { isMongoReady } from '../config/db.js';
-import { getNextId } from '../utils/helpers.js';
-import { generateToken } from '../utils/jwt.js';
+import { loginUser } from '../../controllers/authController.js';
+import User from '../../models/User.js';
+import LoginHistory from '../../models/LoginHistory.js';
+import { isMongoReady } from '../../config/db.js';
+import { getNextId } from '../../utils/helpers.js';
+import { generateToken } from '../../utils/jwt.js';
 
 // Mock the dependencies
-vi.mock('../models/User.js');
-vi.mock('../models/LoginHistory.js');
-vi.mock('../config/db.js', () => ({
+vi.mock('../../models/User.js');
+vi.mock('../../models/LoginHistory.js');
+vi.mock('../../config/db.js', () => ({
   isMongoReady: vi.fn(),
 }));
-vi.mock('../utils/helpers.js', () => ({
+vi.mock('../../utils/helpers.js', () => ({
   getNextId: vi.fn(),
   loadLocalDb: vi.fn(),
   saveLocalDb: vi.fn(),
   getNextLocalId: vi.fn(),
   removeMongooseMetadata: vi.fn(val => val),
 }));
-vi.mock('../utils/jwt.js', () => ({
+vi.mock('../../utils/jwt.js', () => ({
   generateToken: vi.fn(),
   clearToken: vi.fn(),
 }));
@@ -82,7 +82,14 @@ describe('authController - loginUser', () => {
     expect(generateToken).toHaveBeenCalledWith(res, mockUser.id);
     expect(res.json).toHaveBeenCalledWith({
       message: 'Login successful',
-      user: { name: 'Test User', email: 'test@example.com', id: 1 },
+      user: {
+        name: 'Test User',
+        email: 'test@example.com',
+        id: 1,
+        joinedClubIds: [],
+        eventRegistrations: [],
+        picture: ""
+      },
     });
   });
 
@@ -103,7 +110,14 @@ describe('authController - loginUser', () => {
     expect(generateToken).toHaveBeenCalledWith(res, mockAdminUser.id);
     expect(res.json).toHaveBeenCalledWith({
       message: 'Login successful (Admin)',
-      user: { name: 'Admin User', email: 'admin@gmail.com', id: 9999 },
+      user: {
+        name: 'Admin User',
+        email: 'admin@gmail.com',
+        id: 9999,
+        joinedClubIds: [],
+        eventRegistrations: [],
+        picture: ""
+      },
     });
   });
 });

@@ -5,11 +5,20 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { connectDB } from "./config/db.js";
 import { corsMiddleware } from "./middleware/cors.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
 
 import authRoutes from "./routes/authRoutes.js";
 import clubRoutes from "./routes/clubRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 const app = express();
 const httpServer = createServer(app);
@@ -24,12 +33,13 @@ const io = new Server(httpServer, {
 const PORT = process.env.PORT || 3000;
 
 // Connect to Database
-connectDB();
+await connectDB();
 
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(corsMiddleware);
+app.use("/uploads", express.static(uploadsDir));
 
 // Attach io to app
 app.set("io", io);

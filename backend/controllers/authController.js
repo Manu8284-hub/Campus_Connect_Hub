@@ -4,6 +4,9 @@ import { isMongoReady } from "../config/db.js";
 import { getNextId, loadLocalDb, saveLocalDb, getNextLocalId, removeMongooseMetadata } from "../utils/helpers.js";
 import { generateToken, clearToken } from "../utils/jwt.js";
 import bcrypt from "bcryptjs";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const DISABLED_DEMO_EMAIL = "admin@campusconnect.demo";
 const DISABLED_DEMO_PASSWORD = "admin123";
@@ -48,7 +51,14 @@ export const registerUser = async (req, res) => {
 
       return res.status(201).json({
         message: "Account created successfully",
-        user: { name: createdUser.name, email: createdUser.email, id: createdUser.id },
+        user: {
+          name: createdUser.name,
+          email: createdUser.email,
+          id: createdUser.id,
+          joinedClubIds: createdUser.joinedClubIds || [],
+          eventRegistrations: createdUser.eventRegistrations || [],
+          picture: createdUser.picture || ""
+        },
       });
     }
 
@@ -74,7 +84,14 @@ export const registerUser = async (req, res) => {
 
     res.status(201).json({
       message: "Account created successfully",
-      user: { name: createdUser.name, email: createdUser.email, id: createdUser.id },
+      user: {
+        name: createdUser.name,
+        email: createdUser.email,
+        id: createdUser.id,
+        joinedClubIds: createdUser.joinedClubIds || [],
+        eventRegistrations: createdUser.eventRegistrations || [],
+        picture: createdUser.picture || ""
+      },
     });
   } catch (error) {
     console.error("Registration error:", error);
@@ -126,7 +143,14 @@ export const loginUser = async (req, res) => {
       }
       
       generateToken(res, adminUser.id);
-      const userDetail = { name: adminUser.name, email: adminUser.email, id: adminUser.id };
+      const userDetail = {
+        name: adminUser.name,
+        email: adminUser.email,
+        id: adminUser.id,
+        joinedClubIds: adminUser.joinedClubIds || [],
+        eventRegistrations: adminUser.eventRegistrations || [],
+        picture: adminUser.picture || ""
+      };
 
       if (!isMongoReady()) {
         const db = await loadLocalDb();
@@ -163,7 +187,14 @@ export const loginUser = async (req, res) => {
           return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        const userDetail = { name: foundUser.name, email: foundUser.email, id: foundUser.id };
+        const userDetail = {
+          name: foundUser.name,
+          email: foundUser.email,
+          id: foundUser.id,
+          joinedClubIds: foundUser.joinedClubIds || [],
+          eventRegistrations: foundUser.eventRegistrations || [],
+          picture: foundUser.picture || ""
+        };
         generateToken(res, foundUser.id);
 
         db.loginHistory.unshift({
@@ -186,14 +217,25 @@ export const loginUser = async (req, res) => {
           email: normalizedEmail,
           password: "",
           provider: "google",
+          picture: req.body.picture || "",
           createdAt: new Date().toISOString(),
         };
         db.users.push(existingGoogleUser);
         await saveLocalDb(db);
+      } else if (req.body.picture && !existingGoogleUser.picture) {
+        existingGoogleUser.picture = req.body.picture;
+        await saveLocalDb(db);
       }
 
       generateToken(res, existingGoogleUser.id);
-      const userDetail = { name: existingGoogleUser.name, email: existingGoogleUser.email, id: existingGoogleUser.id };
+      const userDetail = {
+        name: existingGoogleUser.name,
+        email: existingGoogleUser.email,
+        id: existingGoogleUser.id,
+        joinedClubIds: existingGoogleUser.joinedClubIds || [],
+        eventRegistrations: existingGoogleUser.eventRegistrations || [],
+        picture: existingGoogleUser.picture || ""
+      };
       return res.json({ message: "Login successful", user: userDetail });
     }
 
@@ -210,7 +252,14 @@ export const loginUser = async (req, res) => {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      const userDetail = { name: foundUser.name, email: foundUser.email, id: foundUser.id };
+      const userDetail = {
+        name: foundUser.name,
+        email: foundUser.email,
+        id: foundUser.id,
+        joinedClubIds: foundUser.joinedClubIds || [],
+        eventRegistrations: foundUser.eventRegistrations || [],
+        picture: foundUser.picture || ""
+      };
       generateToken(res, foundUser.id);
 
       const historyId = await getNextId(LoginHistory);
@@ -239,13 +288,24 @@ export const loginUser = async (req, res) => {
           name: safeName,
           email: normalizedEmail,
           password: "",
-          provider: "google"
+          provider: "google",
+          picture: req.body.picture || ""
         });
+        await existingGoogleUser.save();
+      } else if (req.body.picture && !existingGoogleUser.picture) {
+        existingGoogleUser.picture = req.body.picture;
         await existingGoogleUser.save();
       }
 
       generateToken(res, existingGoogleUser.id);
-      const userDetail = { name: existingGoogleUser.name, email: existingGoogleUser.email, id: existingGoogleUser.id };
+      const userDetail = {
+        name: existingGoogleUser.name,
+        email: existingGoogleUser.email,
+        id: existingGoogleUser.id,
+        joinedClubIds: existingGoogleUser.joinedClubIds || [],
+        eventRegistrations: existingGoogleUser.eventRegistrations || [],
+        picture: existingGoogleUser.picture || ""
+      };
       
       const historyId = await getNextId(LoginHistory);
       await new LoginHistory({
@@ -318,8 +378,31 @@ export const getUserProfile = async (req, res) => {
 
 export const updateUserProfile = async (req, res) => {
   const { email } = req.params;
-  const updates = req.body;
+  const updates = req.body || {};
+  
+  // Map displayName to name if present
+  if (updates.displayName && !updates.name) {
+    updates.name = updates.displayName;
+  }
+  
   try {
+    // If updating email, check if it's already in use
+    if (updates.email && updates.email.trim().toLowerCase() !== email.trim().toLowerCase()) {
+      const targetEmail = updates.email.trim().toLowerCase();
+      if (!isMongoReady()) {
+        const db = await loadLocalDb();
+        const emailExists = db.users.some(u => u.email === targetEmail);
+        if (emailExists) {
+          return res.status(400).json({ message: "Email is already in use by another account" });
+        }
+      } else {
+        const emailExists = await User.findOne({ email: targetEmail });
+        if (emailExists) {
+          return res.status(400).json({ message: "Email is already in use by another account" });
+        }
+      }
+    }
+
     if (!isMongoReady()) {
       const db = await loadLocalDb();
       const userIndex = db.users.findIndex(u => u.email === email);
@@ -394,6 +477,120 @@ export const leaveClub = async (req, res) => {
     res.json({ profile: removeMongooseMetadata(user) });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+export const uploadPicture = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Please upload an image file" });
+    }
+
+    const host = req.get("host");
+    const protocol = req.protocol;
+    const pictureUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
+
+    const userId = req.user.id;
+
+    if (!isMongoReady()) {
+      const db = await loadLocalDb();
+      const userIndex = db.users.findIndex(u => String(u.id) === String(userId));
+      if (userIndex === -1) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      db.users[userIndex].picture = pictureUrl;
+      await saveLocalDb(db);
+
+      console.log(`Updated user picture in local DB for user ${userId}: ${pictureUrl}`);
+      return res.json({
+        message: "Profile picture uploaded successfully",
+        picture: pictureUrl,
+        user: removeMongooseMetadata(db.users[userIndex])
+      });
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { id: userId },
+      { $set: { picture: pictureUrl } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    console.log(`Updated user picture in MongoDB for user ${userId}: ${pictureUrl}`);
+    return res.json({
+      message: "Profile picture uploaded successfully",
+      picture: pictureUrl,
+      user: removeMongooseMetadata(updatedUser)
+    });
+  } catch (error) {
+    console.error("Upload profile picture error:", error);
+    res.status(500).json({ message: "Failed to upload profile picture", error: error.message });
+  }
+};
+
+export const removePicture = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    let oldPicture = "";
+
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    const deletePhysicalFile = async (picturePath) => {
+      if (picturePath && picturePath.includes("/uploads/")) {
+        const filename = picturePath.substring(picturePath.lastIndexOf("/") + 1);
+        const filePath = path.join(__dirname, "..", "uploads", filename);
+        try {
+          await fs.unlink(filePath);
+          console.log(`Physically deleted profile picture file: ${filePath}`);
+        } catch (err) {
+          console.error(`Failed to delete profile picture file: ${filePath}`, err.message);
+        }
+      }
+    };
+
+    if (!isMongoReady()) {
+      const db = await loadLocalDb();
+      const userIndex = db.users.findIndex(u => String(u.id) === String(userId));
+      if (userIndex === -1) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      oldPicture = db.users[userIndex].picture || "";
+      await deletePhysicalFile(oldPicture);
+
+      db.users[userIndex].picture = "";
+      await saveLocalDb(db);
+
+      console.log(`Removed user picture in local DB for user ${userId}`);
+      return res.json({
+        message: "Profile picture removed successfully",
+        user: removeMongooseMetadata(db.users[userIndex])
+      });
+    }
+
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    oldPicture = user.picture || "";
+    await deletePhysicalFile(oldPicture);
+
+    user.picture = "";
+    await user.save();
+
+    console.log(`Removed user picture in MongoDB for user ${userId}`);
+    return res.json({
+      message: "Profile picture removed successfully",
+      user: removeMongooseMetadata(user)
+    });
+  } catch (error) {
+    console.error("Remove profile picture error:", error);
+    res.status(500).json({ message: "Failed to remove profile picture", error: error.message });
   }
 };
 

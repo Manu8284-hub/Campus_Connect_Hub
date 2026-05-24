@@ -310,7 +310,7 @@ const Login = () => {
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          placeholder="you@college.edu"
+                          placeholder="Enter Your Email Address"
                           className="h-12 pl-12 bg-slate-900/70 border-slate-700 text-white"
                           required
                         />
@@ -358,47 +358,47 @@ const Login = () => {
                   </form>
 
                   {/* Google Sign In Divider */}
-<div className="relative my-6">
-  <div className="absolute inset-0 flex items-center">
-    <span className="w-full border-t border-slate-800" />
-  </div>
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-slate-800" />
+                    </div>
 
-  <div className="relative flex justify-center">
-    <button
-      type="button"
-      onClick={() => void handleGoogleLogin()}
-      className="group inline-flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-950 px-8 py-4 text-slate-200 shadow-lg transition-all duration-300 hover:border-sky-500 hover:bg-slate-900 hover:shadow-sky-500/20"
-    >
-      {/* Google Logo */}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 48 48"
-        className="h-7 w-7"
-      >
-        <path
-          fill="#FFC107"
-          d="M43.611 20.083H42V20H24v8h11.303C33.654 32.657 29.233 36 24 36c-6.627 0-12-5.373-12-12S17.373 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
-        />
-        <path
-          fill="#FF3D00"
-          d="M6.306 14.691l6.571 4.819C14.655 16.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"
-        />
-        <path
-          fill="#4CAF50"
-          d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.141 35.091 26.715 36 24 36c-5.211 0-9.617-3.329-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"
-        />
-        <path
-          fill="#1976D2"
-          d="M43.611 20.083H42V20H24v8h11.303c-.793 2.237-2.231 4.166-4.084 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"
-        />
-      </svg>
+                    <div className="relative flex justify-center">
+                      <button
+                        type="button"
+                        onClick={() => void handleGoogleLogin()}
+                        className="group inline-flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-950 px-8 py-4 text-slate-200 shadow-lg transition-all duration-300 hover:border-sky-500 hover:bg-slate-900 hover:shadow-sky-500/20"
+                      >
+                        {/* Google Logo */}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 48 48"
+                          className="h-7 w-7"
+                        >
+                          <path
+                            fill="#FFC107"
+                            d="M43.611 20.083H42V20H24v8h11.303C33.654 32.657 29.233 36 24 36c-6.627 0-12-5.373-12-12S17.373 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
+                          />
+                          <path
+                            fill="#FF3D00"
+                            d="M6.306 14.691l6.571 4.819C14.655 16.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"
+                          />
+                          <path
+                            fill="#4CAF50"
+                            d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.141 35.091 26.715 36 24 36c-5.211 0-9.617-3.329-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"
+                          />
+                          <path
+                            fill="#1976D2"
+                            d="M43.611 20.083H42V20H24v8h11.303c-.793 2.237-2.231 4.166-4.084 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"
+                          />
+                        </svg>
 
-      <span className="text-base font-semibold tracking-wide">
-        Continue with Google
-      </span>
-    </button>
-  </div>
-</div>
+                        <span className="text-base font-semibold tracking-wide">
+                          Continue with Google
+                        </span>
+                      </button>
+                    </div>
+                  </div>
 
                   <div ref={googleButtonRef} className="hidden" aria-hidden="true" />
 
