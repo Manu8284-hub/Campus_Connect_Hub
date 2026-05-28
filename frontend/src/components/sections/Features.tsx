@@ -14,7 +14,7 @@ export default function Features() {
   return (
     <section className="container py-24">
       <div className="text-center max-w-2xl mx-auto mb-14">
-        <p className="text-sm uppercase tracking-widest gradient-text font-semibold mb-2">Why CampusHub</p>
+        <p className="text-sm uppercase tracking-widest gradient-text font-semibold mb-2">Why CAMpus-CONnect</p>
         <h2 className="font-display text-4xl md:text-5xl font-bold text-balance">
           Everything a campus needs. <span className="gradient-text">Nothing it doesn't.</span>
         </h2>

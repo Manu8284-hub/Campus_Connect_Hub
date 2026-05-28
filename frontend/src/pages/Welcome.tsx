@@ -26,7 +26,7 @@ const Welcome = () => {
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6 leading-[1.1] text-foreground tracking-tight">
           Welcome to{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-            CampusHub
+            CAMpus-CONnect
           </span>
         </h1>
 

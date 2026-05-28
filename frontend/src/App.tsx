@@ -103,6 +103,7 @@ import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import CustomCursor from "./components/CustomCursor";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -115,7 +116,7 @@ const DashboardRouter = () => {
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ThemeProvider defaultTheme="dark" storageKey="theme">
+  <ThemeProvider defaultTheme="light" storageKey="theme">
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <SocketProvider>
@@ -125,6 +126,7 @@ const App = () => (
                 <Toaster />
                 <Sonner />
                 <NotificationHandler />
+                <CustomCursor />
                 <BrowserRouter>
                   <ScrollToTop />
                   <Navbar />

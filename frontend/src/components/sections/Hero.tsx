@@ -1,36 +1,41 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Play, Users, CalendarDays, Radio } from 'lucide-react';
-import clubHubImage from '@/assets/hero-orb.png';
-
-const floatingCards = [
-  {
-    icon: Users,
-    label: '120+ Clubs',
-    sub: 'Active communities',
-    pos: 'top-4 -left-4 md:top-8 md:-left-10',
-    delay: 0.7,
-    float: { y: [0, -12, 0] },
-  },
-  {
-    icon: CalendarDays,
-    label: '5000+ Students',
-    sub: 'Engaged members',
-    pos: 'bottom-12 -left-2 md:bottom-20 md:-left-6',
-    delay: 0.9,
-    float: { y: [0, 10, 0] },
-  },
-  {
-    icon: Radio,
-    label: 'Live Events',
-    sub: '24 happening now',
-    pos: 'top-1/3 -right-2 md:-right-8',
-    delay: 1.1,
-    float: { y: [0, -8, 0] },
-  },
-];
+import { useAppContext } from '@/context/AppContext';
 
 export default function Hero() {
+  const { clubs, events } = useAppContext();
+
+  const totalClubs = clubs.length;
+  const totalEvents = events.length;
+  const totalMembers = clubs.reduce((acc, club) => acc + (club.members || 0), 0);
+
+  const floatingCards = [
+    {
+      icon: Users,
+      label: `${totalClubs} Clubs`,
+      sub: 'Active communities',
+      pos: 'top-4 -left-4 md:top-8 md:-left-10',
+      delay: 0.7,
+      float: { y: [0, -12, 0] },
+    },
+    {
+      icon: CalendarDays,
+      label: `${totalMembers} Members`,
+      sub: 'Engaged students',
+      pos: 'bottom-12 -left-2 md:bottom-20 md:-left-6',
+      delay: 0.9,
+      float: { y: [0, 10, 0] },
+    },
+    {
+      icon: Radio,
+      label: `${totalEvents} Events`,
+      sub: 'Scheduled now',
+      pos: 'top-1/3 -right-2 md:-right-8',
+      delay: 1.1,
+      float: { y: [0, -8, 0] },
+    },
+  ];
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 grid-bg opacity-60 pointer-events-none" />
@@ -83,30 +88,55 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* Right: orb */}
-          <div className="relative h-[420px] sm:h-[520px] lg:h-[620px] flex items-center justify-center lg:-mr-12 xl:-mr-20">
-            {/* radial depth */}
-            <div className="absolute inset-0 pointer-events-none"
-              style={{ background: 'radial-gradient(circle at 50% 50%, hsl(var(--neon-purple) / 0.35), transparent 60%)' }} />
-            {/* glow halos */}
-            <div className="absolute w-[80%] aspect-square rounded-full bg-neon-blue/30 blur-3xl pointer-events-none" />
-            <div className="absolute w-[70%] aspect-square rounded-full bg-neon-pink/25 blur-3xl translate-x-10 translate-y-10 pointer-events-none" />
-            <div className="absolute w-[60%] aspect-square rounded-full bg-neon-purple/30 blur-3xl -translate-x-8 -translate-y-8 pointer-events-none" />
-
-            <motion.img
-              src={clubHubImage}
-              alt="College Club and Event Management Hub"
-              width={1024}
-              height={1024}
+          {/* Right: mock dashboard UI */}
+          <div className="relative h-[420px] sm:h-[520px] lg:h-[620px] flex items-center justify-center lg:-mr-12 xl:-mr-20 w-full max-w-[550px] mx-auto lg:mx-0">
+            <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1, y: [0, -16, 0] }}
+              animate={{ opacity: 1, scale: 1, y: [0, -12, 0] }}
               transition={{
                 opacity: { duration: 1, delay: 0.3 },
                 scale: { duration: 1.2, delay: 0.3, ease: 'easeOut' },
                 y: { duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1.2 },
               }}
-              className="relative z-10 w-[95%] max-w-[620px] object-contain rounded-[2rem] overflow-hidden drop-shadow-[0_0_80px_hsl(var(--neon-purple)/0.6)]"
-            />
+              className="relative z-10 w-full aspect-[4/3] rounded-3xl border border-border bg-card p-6 shadow-2xl flex flex-col justify-between"
+            >
+              {/* Mock Window Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-foreground" />
+                  <div className="w-3 h-3 rounded-full bg-muted-foreground/30" />
+                  <div className="w-3 h-3 rounded-full bg-muted-foreground/15" />
+                </div>
+                <span className="text-xs font-mono tracking-widest text-muted-foreground">CAMPUS-CONNECT.SYS</span>
+              </div>
+
+              {/* Mock Window Content */}
+              <div className="flex-1 py-6 flex flex-col justify-center space-y-5">
+                <div className="space-y-1 text-left">
+                  <span className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase">Campus Stats</span>
+                  <div className="text-2xl font-bold font-display tracking-tight text-foreground">Real-time Overview</div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-2xl border border-border bg-secondary/30 flex flex-col justify-between items-start">
+                    <span className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase">Total Clubs</span>
+                    <span className="text-3xl font-bold mt-2 font-display">{totalClubs}</span>
+                  </div>
+                  <div className="p-4 rounded-2xl border border-border bg-secondary/30 flex flex-col justify-between items-start">
+                    <span className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase">Total Events</span>
+                    <span className="text-3xl font-bold mt-2 font-display">{totalEvents}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mock Window Footer */}
+              <div className="pt-4 border-t border-border flex items-center justify-between text-[10px] font-mono tracking-wider text-muted-foreground">
+                <span>VER 4.2.0</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-foreground animate-ping" />
+                  LIVE CONNECTIONS
+                </span>
+              </div>
+            </motion.div>
 
             {/* Floating glass cards */}
             {floatingCards.map((c, i) => {

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Quote } from 'lucide-react';
 
 const testimonials = [
-  { name: 'Aria Chen', role: 'Computer Science - Junior', quote: 'CampusHub turned scattered club updates into one workflow we actually use.', avatar: 'https://i.pravatar.cc/120?img=47' },
+  { name: 'Aria Chen', role: 'Computer Science - Junior', quote: 'CAMpus-CONnect turned scattered club updates into one workflow we actually use.', avatar: 'https://i.pravatar.cc/120?img=47' },
   { name: 'Marcus Patel', role: 'Club Head - Quantum Robotics', quote: 'The dashboards save our team hours every week and keep registrations visible.', avatar: 'https://i.pravatar.cc/120?img=12' },
   { name: 'Sofia Reyes', role: 'Student Affairs - Dean', quote: 'It feels modern, accountable, and much easier for students to adopt.', avatar: 'https://i.pravatar.cc/120?img=32' },
 ];
@@ -13,7 +13,7 @@ export default function Testimonials() {
       <div className="text-center max-w-2xl mx-auto mb-14">
         <p className="text-sm uppercase tracking-widest gradient-text font-semibold mb-2">Loved on campus</p>
         <h2 className="font-display text-4xl md:text-5xl font-bold text-balance">
-          The students <span className="gradient-text">already shipping</span> with CampusHub
+          The students <span className="gradient-text">already shipping</span> with CAMpus-CONnect
         </h2>
       </div>
       <div className="grid md:grid-cols-3 gap-5">

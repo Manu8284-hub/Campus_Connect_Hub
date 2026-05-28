@@ -1,20 +1,21 @@
-# 🚀 Campus Connect Hub
+# 🚀 CAMpus-CONnect
 
-Campus Connect Hub is a premium, full-stack student engagement platform designed to bridge the gap between students, clubs, and campus events. Built with a modern tech stack (MERN), it offers a seamless, real-time experience for discovering communities and tracking campus participation.
+CAMpus-CONnect (formerly ClubHub) is a premium, full-stack student engagement platform designed to bridge the gap between students, clubs, and campus events. Built with a modern tech stack, the platform has been redesigned around a stark, high-contrast, minimalist **monochromatic black-and-white theme** with custom interactive animations, trailing cursors, and real-time database statistics.
 
 ---
 
 ## ✨ Key Highlights
 
-- **🎯 Personalized Experience**: Root-first landing page with interest-based club recommendations.
-- **🛡️ Secure Access**: Integrated Google Sign-In and secure JWT-based authentication.
+- **🎯 Stark Monochrome Aesthetic**: Sleek black-and-white theme built with a pure HSL color utility design system. High contrast, clean outlines, and beautiful typography.
+- **🖥️ Pure CSS Hero Mockup**: Replaced traditional static media with a floating, pure CSS interactive system dashboard showing real-time statistics (active clubs, upcoming events) synced directly to the database.
+- **✨ Custom Coordinated Cursor**: Dynamic dual-layer pointer (central solid tracking dot + outer trailing ring) that expands on hover when hovering over buttons, cards, and interactive elements.
+- **🎭 Background Ticker & Typewriter Reveal**:
+  - The footer background features 12 themed words floating randomly across coordinate bounds using non-linear easing animations.
+  - A giant background watermark of `CAMpus-CONnect` is automatically printed letter-by-letter using a staggered typewriter reveal starting after a 3-second delay.
+- **🛡️ Secure Access**: Integrated Google Sign-In and secure JWT-based authentication with HttpOnly cookies.
 - **📡 Real-time Sync**: Instant event notifications and updates powered by Socket.io.
-- **💎 Premium UI/UX**: Sophisticated design system featuring:
-  - Animated mesh gradients and glassmorphism.
-  - Smooth micro-animations using Framer Motion.
-  - Custom `PageHeader` component for a unified, modern aesthetic.
-- **📊 Admin Control Center**: Comprehensive dashboard for admins to manage campus activities with real-time CRUD operations.
-- **👤 Student Command Center**: Personalized dashboard to track joined clubs, event tickets, attendance scores, and earn badges.
+- **📊 Admin Dashboard**: Comprehensive command center to manage events, registrations, and club configurations.
+- **👤 Student Hub**: Personalized workspace to join clubs, track attendance scores, and earn gamified badges.
 
 ---
 
@@ -23,29 +24,28 @@ Campus Connect Hub is a premium, full-stack student engagement platform designed
 ### Frontend
 - **Framework**: React 18 with Vite
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS & Vanilla HSL CSS Tokens
 - **Components**: Shadcn UI & Radix UI
 - **Real-time**: Socket.io Client
-- **Animations**: Framer Motion
+- **Animations**: CSS Keyframes & Easing Animations
 - **Icons**: Lucide React
 
 ### Backend
 - **Runtime**: Node.js
 - **Framework**: Express.js
-- **Database**: MongoDB Atlas (Primary) & Mongoose ODM
+- **Database**: MongoDB Atlas (Primary) & Prisma Client
 - **Real-time**: Socket.io
-- **Security**: JWT (JSON Web Tokens), Bcryptjs, Cookie-Parser
-- **Persistence**: RESTful API architecture (MVC Pattern)
+- **Security**: JWT, Bcrypt Hashing, Cookie-Parser
 
 ---
 
 ## 🚀 Main Features
 
 ### 🔐 Advanced Security & Identity
-- **JWT & HttpOnly Cookies**: Secure session management that protects against XSS and CSRF attacks.
-- **Bcrypt Hashing**: Industry-standard password encryption for credential-based login.
+- **JWT & HttpOnly Cookies**: Secure session management protecting against XSS and CSRF.
+- **Bcrypt Hashing**: Secure password encryption for credential-based logins.
 - **Session Persistence**: Initial session verification on load to keep users logged in securely.
-- **Role-based access control**: Specialized views for Admins and Students.
+- **Role-based access control**: Distinct dashboards for Admins and Students.
 
 ### 🏛️ Club & Event Management
 - **Real-time Notifications**: Instant toast notifications for new or updated events via Socket.io.
@@ -110,7 +110,7 @@ VITE_GOOGLE_CLIENT_ID=your-google-client-id
 
 ## 🗺️ Project Structure
 
-- `/` — Dynamic Landing Page
+- `/` — Dynamic Landing Page with Floating Dashboard Mockup
 - `/clubs` — Interactive Club Explorer
 - `/events` — Campus Events Calendar
 - `/dashboard` — Personal Student Activity Hub
@@ -123,10 +123,11 @@ VITE_GOOGLE_CLIENT_ID=your-google-client-id
 
 - [x] **Secure Session Management**: JWT tokens and HttpOnly cookies implemented.
 - [x] **Real-time Notifications**: Socket.io integration complete.
+- [x] **Minimalist Design System**: Stark monochrome light theme complete.
+- [x] **Interactive Footer Animations**: Floating background words and delayed typewriter watermark.
 - [ ] **PDF Certificates**: High-quality PDF generation for event participation.
 - [ ] **Enhanced Analytics**: Advanced data visualization for admin reporting.
-- [ ] **Collaborative Tools**: Live chat and forum sections for clubs.
 
 ---
 
-*Developed with ❤️ for a better campus experience.*
+*Developed BY CHILL GUYS......*

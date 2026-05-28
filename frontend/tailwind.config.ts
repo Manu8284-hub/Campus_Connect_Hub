@@ -1,5 +1,19 @@
 import type { Config } from "tailwindcss";
 
+const monochromeReversed = {
+  50: '#000000',
+  100: '#0a0a0a',
+  200: '#171717',
+  300: '#262626',
+  400: '#404040',
+  500: '#737373',
+  600: '#a3a3a3',
+  700: '#d4d4d4',
+  800: '#e5e5e5',
+  900: '#f5f5f5',
+  950: '#ffffff',
+};
+
 export default {
   darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
@@ -65,6 +79,21 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        white: "#000000",
+        black: "#ffffff",
+        slate: monochromeReversed,
+        zinc: monochromeReversed,
+        neutral: monochromeReversed,
+        gray: monochromeReversed,
+        stone: monochromeReversed,
+        sky: monochromeReversed,
+        indigo: monochromeReversed,
+        purple: monochromeReversed,
+        pink: monochromeReversed,
+        emerald: monochromeReversed,
+        amber: monochromeReversed,
+        blue: monochromeReversed,
+        violet: monochromeReversed,
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',

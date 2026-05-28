@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus } from 'lucide-react';
 
 const faqs = [
-  { q: 'Is CampusHub free for students?', a: 'Yes. Every student gets a full CampusHub account at no cost.' },
+  { q: 'Is CAMpus-CONnect free for students?', a: 'Yes. Every student gets a full CAMpus-CONnect account at no cost.' },
   { q: 'Can I run multiple clubs from one account?', a: 'Yes. Role-based dashboards support students, club heads, and admins.' },
   { q: 'How do registrations and waitlists work?', a: 'Each event has a capacity. Once full, the API marks new signups as waitlisted.' },
   { q: 'Is the backend real?', a: 'Yes. Clubs, events, registrations, users, and notifications are stored in MongoDB through Express MVC APIs.' },

@@ -53,7 +53,7 @@ export type DashboardStats = {
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000/api';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const token = localStorage.getItem('CampusHub_token');
+  const token = localStorage.getItem('CAMpus-CONnect_token');
   const headers: HeadersInit = { 'Content-Type': 'application/json', ...options?.headers };
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;

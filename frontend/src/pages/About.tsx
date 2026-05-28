@@ -21,7 +21,7 @@ const teamMembers = [
     name: "Jatin Kumar",
     role: "Full Stack Developer & Team Lead",
     image: "/jatin.png",
-    bio: "Architected the entire CampusHub platform from ground up — backend APIs, real-time socket infrastructure, authentication system, and the admin dashboard.",
+    bio: "Architected the entire CAMpus-CONnect platform from ground up — backend APIs, real-time socket infrastructure, authentication system, and the admin dashboard.",
     skills: ["React", "Node.js", "MongoDB", "Socket.io", "TypeScript"],
     icon: <Code2 className="w-5 h-5" />,
     gradient: "from-blue-500 via-indigo-500 to-purple-600",
@@ -33,7 +33,7 @@ const teamMembers = [
     name: "Madhav",
     role: "Frontend Developer & UI/UX Designer",
     image: "/madhav.png",
-    bio: "Crafted the stunning visual identity of CampusHub — the futuristic dark theme, glassmorphism components, micro-animations, and responsive layouts.",
+    bio: "Crafted the stunning visual identity of CAMpus-CONnect — the futuristic dark theme, glassmorphism components, micro-animations, and responsive layouts.",
     skills: ["React", "Tailwind CSS", "Framer Motion", "Figma", "UI/UX"],
     icon: <Palette className="w-5 h-5" />,
     gradient: "from-purple-500 via-pink-500 to-rose-500",
@@ -119,7 +119,7 @@ const About = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              CampusHub was designed and developed as a passion project by a team of three
+              CAMpus-CONnect was designed and developed as a passion project by a team of three
               dedicated developers from{" "}
               <span className="text-primary font-semibold">Chitkara University</span>,
               driven by the vision to revolutionize campus engagement.
@@ -331,7 +331,7 @@ const About = () => {
 
               <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8">
                 We believe every student deserves a seamless, connected campus experience.
-                CampusHub bridges the gap between students and campus life — making it
+                CAMpus-CONnect bridges the gap between students and campus life — making it
                 effortless to discover clubs, register for events, and build meaningful
                 connections that last a lifetime.
               </p>

@@ -1,5 +1,5 @@
-const clubKey = (userId: string) => `CampusHub_joined_clubs_${userId}`;
-const eventKey = (userId: string) => `CampusHub_registered_events_${userId}`;
+const clubKey = (userId: string) => `CAMpus-CONnect_joined_clubs_${userId}`;
+const eventKey = (userId: string) => `CAMpus-CONnect_registered_events_${userId}`;
 
 function read(key: string) {
   const raw = localStorage.getItem(key);

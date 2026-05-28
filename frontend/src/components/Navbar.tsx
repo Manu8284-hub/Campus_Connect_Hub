@@ -465,7 +465,7 @@ const Navbar = () => {
               <GraduationCap className="h-5 w-5 text-primary-foreground" />
             </span>
             <span className="font-display font-bold text-lg md:text-xl tracking-tight">
-              Campus<span className="gradient-text">Hub</span>
+              CAMpus-<span className="gradient-text">CONnect</span>
             </span>
           </Link>
 
@@ -837,7 +837,7 @@ const Navbar = () => {
       >
         <AlertDialogContent className="max-w-md rounded-2xl border-border/60">
           <AlertDialogHeader>
-            <AlertDialogTitle>Logout from CampusHub?</AlertDialogTitle>
+            <AlertDialogTitle>Logout from CAMpus-CONnect?</AlertDialogTitle>
             <AlertDialogDescription>
               You will be signed out from this session and returned to the login page.
             </AlertDialogDescription>

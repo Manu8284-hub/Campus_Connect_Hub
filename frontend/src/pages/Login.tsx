@@ -180,7 +180,7 @@ const Login = () => {
 
             toast({
               title: "Logged In Successfully",
-              description: "Welcome to CampusHub.",
+              description: "Welcome to CAMpus-CONnect.",
             });
 
             navigate(from, { replace: true });

@@ -425,7 +425,7 @@ const Profile = () => {
 </head>
 <body>
   <div class="card">
-    <div class="eyebrow">CampusHub Certificate</div>
+    <div class="eyebrow">CAMpus-CONnect Certificate</div>
     <h1>Certificate of Participation</h1>
     <p>This certifies that</p>
     <div class="name">${formatName(user.name)}</div>
