@@ -8,7 +8,11 @@
     "postinstall": "prisma generate",
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:load:smoke": "k6 run ../load-tests/scripts/smoke-test.js",
+    "test:load": "k6 run ../load-tests/scripts/load-test.js",
+    "test:load:stress": "k6 run ../load-tests/scripts/stress-test.js",
+    "test:load:spike": "k6 run ../load-tests/scripts/spike-test.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
