@@ -7,10 +7,12 @@ export const generateToken = (res, userId) => {
     expiresIn: "30d",
   });
 
+  const isProduction = process.env.NODE_ENV === "production" || (process.env.FRONTEND_URL && process.env.FRONTEND_URL.includes("vercel.app"));
+
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: false, // Set to false to allow cookies over HTTP on localhost
-    sameSite: "lax",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
 
@@ -18,8 +20,11 @@ export const generateToken = (res, userId) => {
 };
 
 export const clearToken = (res) => {
+  const isProduction = process.env.NODE_ENV === "production" || (process.env.FRONTEND_URL && process.env.FRONTEND_URL.includes("vercel.app"));
   res.cookie("jwt", "", {
     httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     expires: new Date(0),
   });
 };
