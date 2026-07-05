@@ -73,7 +73,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     console.log("Current Socket Connecting to URL:", envUrl);
 
     // 3. Fallback only if strictly undefined/empty
-    const API_BASE_URL = envUrl && envUrl.trim() !== "" ? envUrl : "http://localhost:3000";
+    const API_BASE_URL = (envUrl && envUrl.trim() !== "" ? envUrl : "http://localhost:3000").replace(/\/$/, "");
 
     const socketInstance = io(API_BASE_URL, {
       withCredentials: true,
